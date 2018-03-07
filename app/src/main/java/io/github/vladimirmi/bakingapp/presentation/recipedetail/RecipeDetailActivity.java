@@ -1,4 +1,4 @@
-package io.github.vladimirmi.bakingapp;
+package io.github.vladimirmi.bakingapp.presentation.recipedetail;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,11 +10,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import io.github.vladimirmi.bakingapp.R;
+import io.github.vladimirmi.bakingapp.presentation.recipemaster.RecipeMasterActivity;
+
 /**
- * An activity representing a single Recipe detail screen. This
+ * An activity representing a single Recipe entity detail screen. This
  * activity is only used on narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link RecipeListActivity}.
+ * in a {@link RecipeMasterActivity}.
  */
 public class RecipeDetailActivity extends AppCompatActivity {
 
@@ -73,7 +76,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            navigateUpTo(new Intent(this, RecipeListActivity.class));
+            navigateUpTo(new Intent(this, RecipeMasterActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

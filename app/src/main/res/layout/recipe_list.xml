@@ -9,6 +9,6 @@
                                         android:layout_marginLeft="16dp"
                                         android:layout_marginRight="16dp"
                                         app:layoutManager="LinearLayoutManager"
-                                        tools:context="io.github.vladimirmi.bakingapp.RecipeListActivity"
+                                        tools:context="io.github.vladimirmi.bakingapp.presentation.recipemaster.RecipeMasterActivity"
                                         tools:listitem="@layout/recipe_list_content"
     />

@@ -9,6 +9,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [toothpick_registry_package_name: 'io.github.vladimirmi.bakingapp']
+            }
+        }
     }
     buildTypes {
         release {
@@ -16,15 +22,43 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+ext {
+    supportLibrary = '26.1.0'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    //Testing
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    //Support library
+    implementation 'com.android.support:appcompat-v7:' + supportLibrary
+    implementation 'com.android.support:support-v4:' + supportLibrary
+    implementation 'com.android.support:recyclerview-v7:' + supportLibrary
+    implementation 'com.android.support:design:' + supportLibrary
+    //AC
+    implementation "android.arch.lifecycle:extensions:1.1.0"
+    implementation "android.arch.lifecycle:common-java8:1.1.0"
+    //DI
+    implementation 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.1.2'
+    annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:1.1.2'
+    //Net
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.3.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.9.0'
+    //Logging
+    implementation 'com.facebook.stetho:stetho:1.5.0'
+    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    implementation 'com.jakewharton.timber:timber:4.6.0'
+    //UI
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
 }
