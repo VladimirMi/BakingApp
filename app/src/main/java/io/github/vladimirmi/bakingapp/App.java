@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.facebook.stetho.Stetho;
 
+import io.github.vladimirmi.bakingapp.di.AppModule;
+import io.github.vladimirmi.bakingapp.di.Scopes;
 import timber.log.Timber;
 import toothpick.Toothpick;
 import toothpick.configuration.Configuration;
@@ -35,5 +37,7 @@ public class App extends Application {
             setRootRegistry(new FactoryRegistry());
             setRootRegistry(new MemberInjectorRegistry());
         }
+
+        Scopes.appScope().installModules(new AppModule());
     }
 }

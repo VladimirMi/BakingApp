@@ -11,6 +11,7 @@ import toothpick.config.Module;
 public class AppModule extends Module {
 
     public AppModule() {
+        bind(ViewModelFactory.class).toInstance(new ViewModelFactory());
         bind(RestService.class).toInstance(RestServiceProvider.getService());
     }
 }

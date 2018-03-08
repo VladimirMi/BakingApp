@@ -17,4 +17,9 @@ public class Scopes {
     public static Scope appScope() {
         return Toothpick.openScope(APP_SCOPE);
     }
+
+    public static ViewModelFactory VmFactory() {
+        return appScope().getInstance(ViewModelFactory.class);
+    }
+
 }
