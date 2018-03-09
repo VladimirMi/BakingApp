@@ -70,6 +70,14 @@ public class DetailActivity extends AppCompatActivity {
 
         //noinspection ConstantConditions
         viewModel.getSelectedStepPosition().observe(this, integer -> pager.setCurrentItem(integer, true));
+
+        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int position) {
+                viewModel.selectStepPosition(position);
+            }
+        });
     }
 
     @Override

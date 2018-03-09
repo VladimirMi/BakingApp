@@ -1,6 +1,5 @@
 package io.github.vladimirmi.bakingapp.presentation.detail;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,8 +23,7 @@ import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
  */
 public class StepFragment extends Fragment {
 
-    public static final String STEP = "STEP";
-    public static final String STEP_POSITION = "STEP_POSITION";
+    private static final String STEP = "STEP";
 
     @BindView(R.id.step_video) View stepVideo;
     @BindView(R.id.step_title) TextView stepTitle;
@@ -33,16 +31,22 @@ public class StepFragment extends Fragment {
     Unbinder unbinder;
 
     private Step step;
-    private int stepPosition;
 
     public StepFragment() {
+    }
+
+    public static StepFragment newInstance(Step step) {
+        Bundle args = new Bundle();
+        args.putParcelable(STEP, step);
+        StepFragment fragment = new StepFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         step = getArguments().getParcelable(STEP);
-        stepPosition = getArguments().getInt(STEP_POSITION, 0);
     }
 
     @Override
@@ -59,10 +63,9 @@ public class StepFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @SuppressLint("DefaultLocale")
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        stepTitle.setText(String.format("%d. %s", stepPosition, step.getShortDescription()));
+        stepTitle.setText(step.getShortDescription());
         stepDescription.setText(step.getDescription());
     }
 }

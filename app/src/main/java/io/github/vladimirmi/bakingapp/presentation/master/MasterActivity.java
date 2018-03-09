@@ -29,7 +29,7 @@ public class MasterActivity extends AppCompatActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.master_list) RecyclerView entitiesList;
 
-    private boolean mTwoPane;
+    private boolean twoPane;
     private MasterViewModel viewModel;
 
     @Override
@@ -39,7 +39,7 @@ public class MasterActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if (findViewById(R.id.detail_container) != null) {
-            mTwoPane = true;
+            twoPane = true;
         }
         viewModel = Scopes.getViewModel(this, MasterViewModel.class);
 
@@ -59,17 +59,24 @@ public class MasterActivity extends AppCompatActivity {
         entitiesList.setAdapter(adapter);
 
         viewModel.getSelectedRecipe().observe(this, recipe -> {
-                    List<Step> steps = recipe.getSteps();
-                    adapter.setData(steps);
-                });
+            List<Step> steps = recipe.getSteps();
+            adapter.setData(steps);
+        });
 
         viewModel.getSelectedStepPosition().observe(this, adapter::selectItem);
     }
 
     private void showStep(int position) {
         viewModel.selectStepPosition(position);
-        Intent intent = new Intent(this, DetailActivity.class);
-        startActivity(intent);
+        if (twoPane) {
+//            StepFragment fragment = StepFragment.newInstance();
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.detail_container, fragment)
+//                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class);
+            startActivity(intent);
+        }
     }
 
 }

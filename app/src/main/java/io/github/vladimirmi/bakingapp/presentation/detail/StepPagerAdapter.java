@@ -1,6 +1,5 @@
 package io.github.vladimirmi.bakingapp.presentation.detail;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.vladimirmi.bakingapp.data.Step;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 09.03.2018.
@@ -30,13 +28,7 @@ public class StepPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Timber.e("getItem: ");
-        Fragment fragment = new StepFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(StepFragment.STEP, steps.get(position));
-        args.putInt(StepFragment.STEP_POSITION, position);
-        fragment.setArguments(args);
-        return fragment;
+        return StepFragment.newInstance(steps.get(position));
     }
 
     @Override

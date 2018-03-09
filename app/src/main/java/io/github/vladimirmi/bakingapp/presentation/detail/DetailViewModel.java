@@ -29,7 +29,17 @@ public class DetailViewModel extends ViewModel {
         return Transformations.map(repository.getSelectedRecipe(), Recipe::getSteps);
     }
 
-    public LiveData<Integer> getSelectedStepPosition() {
+    LiveData<Integer> getSelectedStepPosition() {
         return repository.getSelectedStepPosition();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    LiveData<Step> getSelectedStep() {
+        LiveData<List<Step>> steps = Transformations.switchMap(getSelectedStepPosition(), input -> getSteps());
+        return Transformations.map(steps, input -> input.get(getSelectedStepPosition().getValue()));
+    }
+
+    public void selectStepPosition(int position) {
+        repository.selectStepPosition(position);
     }
 }

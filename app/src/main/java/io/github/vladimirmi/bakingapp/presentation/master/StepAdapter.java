@@ -1,6 +1,7 @@
 package io.github.vladimirmi.bakingapp.presentation.master;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Step;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 08.03.2018.
@@ -81,8 +81,8 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.RecipeStepVH> 
             textView.setText(text);
         }
 
-        public void select(boolean selected) {
-            Timber.e("select: %s", selected);
+        void select(boolean selected) {
+            itemView.setBackgroundColor(selected ? Color.GRAY : Color.WHITE);
         }
     }
 
