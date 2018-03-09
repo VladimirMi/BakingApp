@@ -53,8 +53,8 @@ public class RecipeListActivity extends AppCompatActivity {
     }
 
     private void showRecipe(Recipe recipe) {
+        viewModel.selectRecipe(recipe);
         Intent intent = new Intent(this, MasterActivity.class);
-        intent.putExtra(MasterActivity.RECIPE_ID, recipe.getId());
         startActivity(intent);
     }
 }

@@ -21,7 +21,15 @@ public class MasterViewModel extends ViewModel {
         this.repository = repository;
     }
 
-    LiveData<Recipe> getRecipe(int id) {
-        return repository.getRecipe(id);
+    LiveData<Recipe> getSelectedRecipe() {
+        return repository.getSelectedRecipe();
+    }
+
+    public void selectStepPosition(int position) {
+        repository.selectStepPosition(position);
+    }
+
+    public LiveData<Integer> getSelectedStepPosition() {
+        return repository.getSelectedStepPosition();
     }
 }

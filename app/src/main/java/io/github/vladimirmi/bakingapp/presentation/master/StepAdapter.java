@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Step;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 08.03.2018.
@@ -21,10 +22,11 @@ import io.github.vladimirmi.bakingapp.data.Step;
 
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.RecipeStepVH> {
 
-    private final OnEntityClickListener listener;
+    private final OnItemClickListener listener;
     private List<Step> steps = new ArrayList<>();
+    private int selectedPosition;
 
-    public StepAdapter(OnEntityClickListener listener) {
+    public StepAdapter(OnItemClickListener listener) {
         this.listener = listener;
     }
 
@@ -32,7 +34,6 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.RecipeStepVH> 
         this.steps = new ArrayList<>(steps);
         notifyDataSetChanged();
     }
-
 
     @Override
     public RecipeStepVH onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -43,15 +44,26 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.RecipeStepVH> 
     }
 
     @Override
+    public void onBindViewHolder(RecipeStepVH holder, int position, List<Object> payloads) {
+        holder.select(!payloads.isEmpty());
+        super.onBindViewHolder(holder, position, payloads);
+    }
+
+    @Override
     public void onBindViewHolder(RecipeStepVH holder, int position) {
-        Step step = steps.get(position);
-        holder.bind(step, position);
-        holder.itemView.setOnClickListener(v -> listener.onStepClick(step));
+        holder.bind(steps.get(position), position);
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(position));
     }
 
     @Override
     public int getItemCount() {
         return steps.size();
+    }
+
+    public void selectItem(int position) {
+        notifyItemChanged(selectedPosition);
+        selectedPosition = position;
+        notifyItemChanged(selectedPosition, true); // have payload -> select
     }
 
     static class RecipeStepVH extends RecyclerView.ViewHolder {
@@ -68,10 +80,14 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.RecipeStepVH> 
             String text = String.format("%d. %s", position, step.getShortDescription());
             textView.setText(text);
         }
+
+        public void select(boolean selected) {
+            Timber.e("select: %s", selected);
+        }
     }
 
-    interface OnEntityClickListener {
+    interface OnItemClickListener {
 
-        void onStepClick(Step step);
+        void onItemClick(int position);
     }
 }

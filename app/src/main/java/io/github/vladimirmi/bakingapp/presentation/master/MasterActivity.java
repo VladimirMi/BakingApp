@@ -15,7 +15,6 @@ import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Step;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
-import io.github.vladimirmi.bakingapp.presentation.detail.StepFragment;
 
 /**
  * An activity representing a list of Recipe entities. This activity
@@ -26,8 +25,6 @@ import io.github.vladimirmi.bakingapp.presentation.detail.StepFragment;
  * item details side-by-side using two vertical panes.
  */
 public class MasterActivity extends AppCompatActivity {
-
-    public static final String RECIPE_ID = "RECIPE_ID";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.master_list) RecyclerView entitiesList;
@@ -61,17 +58,17 @@ public class MasterActivity extends AppCompatActivity {
         StepAdapter adapter = new StepAdapter(this::showStep);
         entitiesList.setAdapter(adapter);
 
-        viewModel.getRecipe(getIntent().getIntExtra(RECIPE_ID, 0))
-                .observe(this, recipe -> {
+        viewModel.getSelectedRecipe().observe(this, recipe -> {
                     List<Step> steps = recipe.getSteps();
                     adapter.setData(steps);
                 });
+
+        viewModel.getSelectedStepPosition().observe(this, adapter::selectItem);
     }
 
-    private void showStep(Step step) {
+    private void showStep(int position) {
+        viewModel.selectStepPosition(position);
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(StepFragment.STEP, step);
-        intent.putExtra(RECIPE_ID, getIntent().getIntExtra(RECIPE_ID, 0));
         startActivity(intent);
     }
 

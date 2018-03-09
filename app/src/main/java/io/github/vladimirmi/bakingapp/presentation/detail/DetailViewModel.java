@@ -25,7 +25,11 @@ public class DetailViewModel extends ViewModel {
         this.repository = repository;
     }
 
-    LiveData<List<Step>> getSteps(int recipeId) {
-        return Transformations.map(repository.getRecipe(recipeId), Recipe::getSteps);
+    LiveData<List<Step>> getSteps() {
+        return Transformations.map(repository.getSelectedRecipe(), Recipe::getSteps);
+    }
+
+    public LiveData<Integer> getSelectedStepPosition() {
+        return repository.getSelectedStepPosition();
     }
 }

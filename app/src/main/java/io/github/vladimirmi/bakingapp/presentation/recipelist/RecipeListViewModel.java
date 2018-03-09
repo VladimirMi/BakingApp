@@ -28,4 +28,8 @@ public class RecipeListViewModel extends ViewModel {
     LiveData<List<Recipe>> getRecipes() {
         return recipes;
     }
+
+    public void selectRecipe(Recipe recipe) {
+        repository.selectRecipe(recipe);
+    }
 }

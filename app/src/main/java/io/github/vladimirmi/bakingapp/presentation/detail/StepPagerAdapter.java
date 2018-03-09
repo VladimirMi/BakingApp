@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,12 +56,13 @@ public class StepPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return String.valueOf(position);
+        String tab;
+        if (position == 0) {
+            tab = "Intro";
+        } else {
+            tab = "Step " + position;
+        }
+        return tab;
     }
 
-
-    @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        super.setPrimaryItem(container, position, object);
-    }
 }

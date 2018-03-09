@@ -22,6 +22,8 @@ public class RecipeRepository {
 
     private RestService rest;
     private List<Recipe> recipesCache;
+    private MutableLiveData<Recipe> selectedRecipe = new MutableLiveData<>();
+    private MutableLiveData<Integer> selectedStepPosition = new MutableLiveData<>();
 
     @Inject
     public RecipeRepository(RestService restService) {
@@ -51,15 +53,20 @@ public class RecipeRepository {
         return data;
     }
 
-    public LiveData<Recipe> getRecipe(int id) {
-        final MutableLiveData<Recipe> data = new MutableLiveData<>();
-        for (Recipe recipe : recipesCache) {
-            if (recipe.getId() == id) {
-                data.setValue(recipe);
-                break;
-            }
-        }
-        return data;
+    public void selectRecipe(Recipe recipe) {
+        selectedRecipe.setValue(recipe);
+        selectedStepPosition.setValue(-1);
     }
 
+    public MutableLiveData<Recipe> getSelectedRecipe() {
+        return selectedRecipe;
+    }
+
+    public void selectStepPosition(int position) {
+        selectedStepPosition.setValue(position);
+    }
+
+    public LiveData<Integer> getSelectedStepPosition() {
+        return selectedStepPosition;
+    }
 }

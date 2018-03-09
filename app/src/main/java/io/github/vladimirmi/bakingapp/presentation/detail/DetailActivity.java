@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
-import io.github.vladimirmi.bakingapp.data.Step;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 
@@ -30,7 +29,6 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.detail_container) FrameLayout detailContainer;
 
     private DetailViewModel viewModel;
-    private Step step;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +47,13 @@ public class DetailActivity extends AppCompatActivity {
 
         viewModel = Scopes.getViewModel(this, DetailViewModel.class);
 
-        step = getIntent().getParcelableExtra(StepFragment.STEP);
-        setupStepPager();
+        //noinspection ConstantConditions
+        if (viewModel.getSelectedStepPosition().getValue() != -1) {
+            setupStepPager();
+        }
     }
 
     private void setupStepPager() {
-        if (step == null) return;
-
         ViewPager pager = (ViewPager) getLayoutInflater()
                 .inflate(R.layout.view_detail_steps, detailContainer, false);
         detailContainer.addView(pager);
@@ -65,16 +63,13 @@ public class DetailActivity extends AppCompatActivity {
 
         TabLayout tabLayout = findViewById(R.id.tabs);
 
-        int id = getIntent().getIntExtra(MasterActivity.RECIPE_ID, 0);
-        viewModel.getSteps(id)
-                .observe(this, steps -> {
-                    //noinspection ConstantConditions
-                    int position = steps.indexOf(step);
+        viewModel.getSteps().observe(this, steps -> {
                     adapter.setData(steps);
                     tabLayout.setupWithViewPager(pager);
-                    pager.setCurrentItem(position);
                 });
 
+        //noinspection ConstantConditions
+        viewModel.getSelectedStepPosition().observe(this, integer -> pager.setCurrentItem(integer, true));
     }
 
     @Override
