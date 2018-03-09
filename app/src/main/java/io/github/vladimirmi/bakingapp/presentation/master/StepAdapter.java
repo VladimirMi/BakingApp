@@ -1,4 +1,4 @@
-package io.github.vladimirmi.bakingapp.presentation.recipemaster;
+package io.github.vladimirmi.bakingapp.presentation.master;
 
 import android.annotation.SuppressLint;
 import android.support.v7.widget.RecyclerView;
@@ -19,12 +19,12 @@ import io.github.vladimirmi.bakingapp.data.Step;
  * Created by Vladimir Mikhalev 08.03.2018.
  */
 
-public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.RecipeStepVH> {
+public class StepAdapter extends RecyclerView.Adapter<StepAdapter.RecipeStepVH> {
 
     private final OnEntityClickListener listener;
     private List<Step> steps = new ArrayList<>();
 
-    public RecipeStepAdapter(OnEntityClickListener listener) {
+    public StepAdapter(OnEntityClickListener listener) {
         this.listener = listener;
     }
 
@@ -37,7 +37,7 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Re
     @Override
     public RecipeStepVH onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_recipe_step, parent, false);
+                .inflate(R.layout.item_step, parent, false);
 
         return new RecipeStepVH(view);
     }
@@ -65,7 +65,7 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Re
 
         void bind(Step step, int position) {
             @SuppressLint("DefaultLocale")
-            String text = String.format("%d. %s", position + 1, step.getShortDescription());
+            String text = String.format("%d. %s", position, step.getShortDescription());
             textView.setText(text);
         }
     }

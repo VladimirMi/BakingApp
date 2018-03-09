@@ -1,4 +1,4 @@
-package io.github.vladimirmi.bakingapp.presentation.recipemaster;
+package io.github.vladimirmi.bakingapp.presentation.master;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
@@ -12,18 +12,16 @@ import io.github.vladimirmi.bakingapp.data.RecipeRepository;
  * Created by Vladimir Mikhalev 09.03.2018.
  */
 
-public class RecipeMasterViewModel extends ViewModel {
+public class MasterViewModel extends ViewModel {
 
     private final RecipeRepository repository;
-    private LiveData<Recipe> recipe;
 
     @Inject
-    public RecipeMasterViewModel(RecipeRepository repository) {
+    public MasterViewModel(RecipeRepository repository) {
         this.repository = repository;
     }
 
     LiveData<Recipe> getRecipe(int id) {
-        recipe = repository.getRecipe(id);
-        return recipe;
+        return repository.getRecipe(id);
     }
 }

@@ -23,6 +23,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/recipe_master_content"/>
+    <include layout="@layout/part_master_content"/>
 
 </LinearLayout>

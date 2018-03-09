@@ -1,5 +1,11 @@
 package io.github.vladimirmi.bakingapp.di;
 
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+
 import toothpick.Scope;
 import toothpick.Toothpick;
 
@@ -18,8 +24,19 @@ public class Scopes {
         return Toothpick.openScope(APP_SCOPE);
     }
 
-    public static ViewModelFactory VmFactory() {
+    public static ViewModelFactory viewModelFactory() {
         return appScope().getInstance(ViewModelFactory.class);
     }
+
+    public static <T extends ViewModel> T getViewModel(@NonNull FragmentActivity owner,
+                                                       @NonNull Class<T> modelClass) {
+        return ViewModelProviders.of(owner, viewModelFactory()).get(modelClass);
+    }
+
+    public static <T extends ViewModel> T getViewModel(@NonNull Fragment owner,
+                                                       @NonNull Class<T> modelClass) {
+        return ViewModelProviders.of(owner, viewModelFactory()).get(modelClass);
+    }
+
 
 }

@@ -1,6 +1,5 @@
 package io.github.vladimirmi.bakingapp.presentation.recipelist;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,7 +14,7 @@ import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.di.Scopes;
-import io.github.vladimirmi.bakingapp.presentation.recipemaster.RecipeMasterActivity;
+import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 
 /**
  * An activity representing a list of Recipes.
@@ -34,7 +33,7 @@ public class RecipeListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
         ButterKnife.bind(this);
-        viewModel = ViewModelProviders.of(this, Scopes.VmFactory()).get(RecipeListViewModel.class);
+        viewModel = Scopes.getViewModel(this, RecipeListViewModel.class);
 
         setupToolbar();
         setupRecycler();
@@ -54,8 +53,8 @@ public class RecipeListActivity extends AppCompatActivity {
     }
 
     private void showRecipe(Recipe recipe) {
-        Intent intent = new Intent(this, RecipeMasterActivity.class);
-        intent.putExtra(RecipeMasterActivity.RECIPE_ID, recipe.getId());
+        Intent intent = new Intent(this, MasterActivity.class);
+        intent.putExtra(MasterActivity.RECIPE_ID, recipe.getId());
         startActivity(intent);
     }
 }

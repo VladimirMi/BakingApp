@@ -1,6 +1,5 @@
-package io.github.vladimirmi.bakingapp.presentation.recipemaster;
+package io.github.vladimirmi.bakingapp.presentation.master;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,17 +14,18 @@ import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Step;
 import io.github.vladimirmi.bakingapp.di.Scopes;
-import io.github.vladimirmi.bakingapp.presentation.recipedetail.RecipeDetailActivity;
+import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
+import io.github.vladimirmi.bakingapp.presentation.detail.StepFragment;
 
 /**
  * An activity representing a list of Recipe entities. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link RecipeDetailActivity} representing
+ * lead to a {@link DetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class RecipeMasterActivity extends AppCompatActivity {
+public class MasterActivity extends AppCompatActivity {
 
     public static final String RECIPE_ID = "RECIPE_ID";
 
@@ -33,18 +33,18 @@ public class RecipeMasterActivity extends AppCompatActivity {
     @BindView(R.id.master_list) RecyclerView entitiesList;
 
     private boolean mTwoPane;
-    private RecipeMasterViewModel viewModel;
+    private MasterViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe_master);
+        setContentView(R.layout.activity_master);
         ButterKnife.bind(this);
 
         if (findViewById(R.id.detail_container) != null) {
             mTwoPane = true;
         }
-        viewModel = ViewModelProviders.of(this, Scopes.VmFactory()).get(RecipeMasterViewModel.class);
+        viewModel = Scopes.getViewModel(this, MasterViewModel.class);
 
         setupToolbar();
         setupRecycler();
@@ -58,7 +58,7 @@ public class RecipeMasterActivity extends AppCompatActivity {
     private void setupRecycler() {
         LinearLayoutManager lm = new LinearLayoutManager(this);
         entitiesList.setLayoutManager(lm);
-        RecipeStepAdapter adapter = new RecipeStepAdapter(this::showStep);
+        StepAdapter adapter = new StepAdapter(this::showStep);
         entitiesList.setAdapter(adapter);
 
         viewModel.getRecipe(getIntent().getIntExtra(RECIPE_ID, 0))
@@ -69,8 +69,9 @@ public class RecipeMasterActivity extends AppCompatActivity {
     }
 
     private void showStep(Step step) {
-        Intent intent = new Intent(this, RecipeDetailActivity.class);
-        intent.putExtra(RecipeDetailActivity.STEP, step);
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(StepFragment.STEP, step);
+        intent.putExtra(RECIPE_ID, getIntent().getIntExtra(RECIPE_ID, 0));
         startActivity(intent);
     }
 

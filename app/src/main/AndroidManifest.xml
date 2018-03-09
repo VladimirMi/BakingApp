@@ -24,10 +24,10 @@
         </activity>
 
         <activity
-            android:name=".presentation.recipemaster.RecipeMasterActivity"/>
+            android:name=".presentation.master.MasterActivity"/>
 
         <activity
-            android:name=".presentation.recipedetail.RecipeDetailActivity"/>
+            android:name=".presentation.detail.DetailActivity"/>
     </application>
 
 </manifest>

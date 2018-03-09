@@ -1,0 +1,34 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    >
+
+    <View
+        android:id="@+id/step_video"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/colorPrimary"
+        android:layout_marginBottom="16dp"
+        />
+
+    <TextView
+        android:id="@+id/step_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        tools:text="Sunt exemplares attrahendam brevis."
+        android:layout_marginBottom="16dp"
+        />
+
+    <TextView
+        android:id="@+id/step_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        tools:text="Cur usus persuadere? Eheu, lura! Caculas sunt voxs de alter fermium."
+        />
+</LinearLayout>
