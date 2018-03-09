@@ -18,6 +18,8 @@ import io.github.vladimirmi.bakingapp.presentation.recipemaster.RecipeMasterActi
  */
 public class RecipeDetailActivity extends AppCompatActivity {
 
+    public static final String STEP = "STEP";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -21,10 +21,15 @@ import io.github.vladimirmi.bakingapp.data.Recipe;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> {
 
-    List<Recipe> recipes = new ArrayList<>();
+    private List<Recipe> recipes = new ArrayList<>();
+    private final OnRecipeClickListener listener;
+
+    public RecipeAdapter(OnRecipeClickListener listener) {
+        this.listener = listener;
+    }
 
     public void setData(List<Recipe> recipes) {
-        this.recipes = recipes;
+        this.recipes = new ArrayList<>(recipes);
         notifyDataSetChanged();
     }
 
@@ -37,7 +42,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
 
     @Override
     public void onBindViewHolder(RecipeVH holder, int position) {
-        holder.bind(recipes.get(position));
+        Recipe recipe = recipes.get(position);
+        holder.bind(recipe);
+        holder.itemView.setOnClickListener(view -> listener.onRecipeClick(recipe));
     }
 
     @Override
@@ -58,5 +65,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
         void bind(Recipe recipe) {
             recipeName.setText(recipe.getName());
         }
+    }
+
+    interface OnRecipeClickListener {
+
+        void onRecipeClick(Recipe recipe);
     }
 }

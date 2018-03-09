@@ -2,6 +2,7 @@ package io.github.vladimirmi.bakingapp.data;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import timber.log.Timber;
 public class RecipeRepository {
 
     private RestService rest;
+    private List<Recipe> recipesCache;
 
     @Inject
     public RecipeRepository(RestService restService) {
@@ -28,19 +30,35 @@ public class RecipeRepository {
 
     public LiveData<List<Recipe>> getRecipes() {
         final MutableLiveData<List<Recipe>> data = new MutableLiveData<>();
+        if (recipesCache != null) {
+            data.setValue(recipesCache);
+        } else {
 
-        rest.getRecipes().enqueue(new Callback<List<Recipe>>() {
-            @Override
-            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-                data.setValue(response.body());
+            rest.getRecipes().enqueue(new Callback<List<Recipe>>() {
+                @Override
+                public void onResponse(@NonNull Call<List<Recipe>> call, @NonNull Response<List<Recipe>> response) {
+                    List<Recipe> recipes = response.body();
+                    recipesCache = recipes;
+                    data.setValue(recipes);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<List<Recipe>> call, @NonNull Throwable t) {
+                    Timber.e(t);
+                }
+            });
+        }
+        return data;
+    }
+
+    public LiveData<Recipe> getRecipe(int id) {
+        final MutableLiveData<Recipe> data = new MutableLiveData<>();
+        for (Recipe recipe : recipesCache) {
+            if (recipe.getId() == id) {
+                data.setValue(recipe);
+                break;
             }
-
-            @Override
-            public void onFailure(Call<List<Recipe>> call, Throwable t) {
-                Timber.e(t);
-            }
-        });
-
+        }
         return data;
     }
 
