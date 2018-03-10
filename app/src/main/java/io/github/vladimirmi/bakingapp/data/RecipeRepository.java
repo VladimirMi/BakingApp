@@ -2,6 +2,7 @@ package io.github.vladimirmi.bakingapp.data;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -20,14 +21,17 @@ import timber.log.Timber;
 
 public class RecipeRepository {
 
-    private RestService rest;
+    private final PlayerHolder player;
+    private final RestService rest;
+
     private List<Recipe> recipesCache;
-    private MutableLiveData<Recipe> selectedRecipe = new MutableLiveData<>();
+    private Recipe selectedRecipe;
     private MutableLiveData<Integer> selectedStepPosition = new MutableLiveData<>();
 
     @Inject
-    public RecipeRepository(RestService restService) {
+    public RecipeRepository(RestService restService, PlayerHolder player) {
         this.rest = restService;
+        this.player = player;
     }
 
     public LiveData<List<Recipe>> getRecipes() {
@@ -54,16 +58,23 @@ public class RecipeRepository {
     }
 
     public void selectRecipe(Recipe recipe) {
-        selectedRecipe.setValue(recipe);
+        selectedRecipe = recipe;
         selectedStepPosition.setValue(-1);
     }
 
-    public MutableLiveData<Recipe> getSelectedRecipe() {
+    public Recipe getSelectedRecipe() {
         return selectedRecipe;
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void selectStepPosition(int position) {
+        if (selectedStepPosition.getValue() == position) return;
+
         selectedStepPosition.setValue(position);
+        Step step = selectedRecipe.getSteps().get(position);
+        if (!step.getVideoURL().isEmpty()) {
+            player.prepare(Uri.parse(step.getVideoURL()));
+        }
     }
 
     public LiveData<Integer> getSelectedStepPosition() {

@@ -70,6 +70,6 @@ public class StepFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         stepTitle.setText(step.getShortDescription());
         stepDescription.setText(step.getDescription());
-//        stepVideo.setPlayer(viewModel.getPlayer());
+//        stepVideo.setPlayer(viewModel.get());
     }
 }

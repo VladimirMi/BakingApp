@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.google.android.exoplayer2.ui.PlayerView;
@@ -50,12 +51,13 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         viewModel = Scopes.getViewModel(this, DetailViewModel.class);
-        playerView.setPlayer(viewModel.getPlayer());
+
 
         //noinspection ConstantConditions
-//        if (viewModel.getSelectedStepPosition().getValue() != -1) {
-        setupStepPager();
-//        }
+        if (viewModel.getSelectedStepPosition().getValue() != -1) {
+            setupStepPager();
+            setupPlayer();
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -67,11 +69,10 @@ public class DetailActivity extends AppCompatActivity {
         StepPagerAdapter adapter = new StepPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
 
-        viewModel.getSteps().observe(this, steps -> {
-            adapter.setData(steps);
-            tabs.setupWithViewPager(pager);
-            pager.setCurrentItem(viewModel.getSelectedStepPosition());
-        });
+        adapter.setData(viewModel.getSteps());
+        tabs.setupWithViewPager(pager);
+
+        viewModel.getSelectedStepPosition().observe(this, pager::setCurrentItem);
 
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 
@@ -80,6 +81,13 @@ public class DetailActivity extends AppCompatActivity {
                 viewModel.selectStepPosition(position);
             }
         });
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void setupPlayer() {
+        playerView.setPlayer(viewModel.getPlayer());
+        viewModel.isCanPlayVideo().observe(this,
+                can -> playerView.setVisibility(can ? View.VISIBLE : View.GONE));
     }
 
     @Override

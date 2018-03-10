@@ -7,12 +7,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
-import io.github.vladimirmi.bakingapp.data.Step;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
 
@@ -27,7 +24,7 @@ import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
 public class MasterActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.master_list) RecyclerView entitiesList;
+    @BindView(R.id.master_list) RecyclerView stepsList;
 
     private boolean twoPane;
     private MasterViewModel viewModel;
@@ -54,14 +51,11 @@ public class MasterActivity extends AppCompatActivity {
     @SuppressWarnings("ConstantConditions")
     private void setupRecycler() {
         LinearLayoutManager lm = new LinearLayoutManager(this);
-        entitiesList.setLayoutManager(lm);
+        stepsList.setLayoutManager(lm);
         StepAdapter adapter = new StepAdapter(this::showStep);
-        entitiesList.setAdapter(adapter);
+        stepsList.setAdapter(adapter);
 
-        viewModel.getSelectedRecipe().observe(this, recipe -> {
-            List<Step> steps = recipe.getSteps();
-            adapter.setData(steps);
-        });
+        adapter.setData(viewModel.getSteps());
 
         viewModel.getSelectedStepPosition().observe(this, adapter::selectItem);
     }
