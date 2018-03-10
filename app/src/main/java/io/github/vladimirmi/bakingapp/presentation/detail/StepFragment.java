@@ -13,6 +13,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Step;
+import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 
 /**
@@ -25,12 +26,13 @@ public class StepFragment extends Fragment {
 
     private static final String STEP = "STEP";
 
-    @BindView(R.id.step_video) View stepVideo;
+    //    @BindView(R.id.step_video) PlayerView stepVideo;
     @BindView(R.id.step_title) TextView stepTitle;
     @BindView(R.id.step_description) TextView stepDescription;
     Unbinder unbinder;
 
     private Step step;
+    private DetailViewModel viewModel;
 
     public StepFragment() {
     }
@@ -47,6 +49,7 @@ public class StepFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         step = getArguments().getParcelable(STEP);
+        viewModel = Scopes.getViewModel(this, DetailViewModel.class);
     }
 
     @Override
@@ -67,5 +70,6 @@ public class StepFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         stepTitle.setText(step.getShortDescription());
         stepDescription.setText(step.getDescription());
+//        stepVideo.setPlayer(viewModel.getPlayer());
     }
 }

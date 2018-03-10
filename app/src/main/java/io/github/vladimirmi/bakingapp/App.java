@@ -38,6 +38,6 @@ public class App extends Application {
             setRootRegistry(new MemberInjectorRegistry());
         }
 
-        Scopes.appScope().installModules(new AppModule());
+        Scopes.appScope().installModules(new AppModule(getApplicationContext()));
     }
 }

@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import com.google.android.exoplayer2.ui.PlayerView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
@@ -27,6 +29,8 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.appbar) AppBarLayout appbar;
     @BindView(R.id.detail_container) FrameLayout detailContainer;
+    @BindView(R.id.tabs) TabLayout tabs;
+    @BindView(R.id.playerView) PlayerView playerView;
 
     private DetailViewModel viewModel;
 
@@ -46,13 +50,15 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         viewModel = Scopes.getViewModel(this, DetailViewModel.class);
+        playerView.setPlayer(viewModel.getPlayer());
 
         //noinspection ConstantConditions
-        if (viewModel.getSelectedStepPosition().getValue() != -1) {
-            setupStepPager();
-        }
+//        if (viewModel.getSelectedStepPosition().getValue() != -1) {
+        setupStepPager();
+//        }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void setupStepPager() {
         ViewPager pager = (ViewPager) getLayoutInflater()
                 .inflate(R.layout.view_detail_steps, detailContainer, false);
@@ -61,15 +67,11 @@ public class DetailActivity extends AppCompatActivity {
         StepPagerAdapter adapter = new StepPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
 
-        TabLayout tabLayout = findViewById(R.id.tabs);
-
         viewModel.getSteps().observe(this, steps -> {
-                    adapter.setData(steps);
-                    tabLayout.setupWithViewPager(pager);
-                });
-
-        //noinspection ConstantConditions
-        viewModel.getSelectedStepPosition().observe(this, integer -> pager.setCurrentItem(integer, true));
+            adapter.setData(steps);
+            tabs.setupWithViewPager(pager);
+            pager.setCurrentItem(viewModel.getSelectedStepPosition());
+        });
 
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 

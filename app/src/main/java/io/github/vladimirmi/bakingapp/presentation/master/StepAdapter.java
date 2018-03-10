@@ -61,9 +61,10 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.RecipeStepVH> 
     }
 
     public void selectItem(int position) {
-        notifyItemChanged(selectedPosition);
+        if (selectedPosition == position) return;
+        notifyItemChanged(position, true); // have payload -> select
+        notifyItemChanged(selectedPosition); // unselect
         selectedPosition = position;
-        notifyItemChanged(selectedPosition, true); // have payload -> select
     }
 
     static class RecipeStepVH extends RecyclerView.ViewHolder {

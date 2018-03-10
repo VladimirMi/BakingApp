@@ -1,5 +1,7 @@
 package io.github.vladimirmi.bakingapp.di;
 
+import android.content.Context;
+
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.data.net.RestService;
 import io.github.vladimirmi.bakingapp.data.net.RestServiceProvider;
@@ -11,7 +13,8 @@ import toothpick.config.Module;
 
 public class AppModule extends Module {
 
-    public AppModule() {
+    public AppModule(Context applicationContext) {
+        bind(Context.class).toInstance(applicationContext);
         bind(ViewModelFactory.class).toInstance(new ViewModelFactory());
         bind(RestService.class).toInstance(RestServiceProvider.getService());
 
