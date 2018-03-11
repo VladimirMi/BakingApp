@@ -3,10 +3,13 @@ package io.github.vladimirmi.bakingapp.presentation.master;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
+import com.google.android.exoplayer2.Player;
+
 import java.util.List;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.bakingapp.data.PlayerHolder;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.data.Step;
 
@@ -17,10 +20,17 @@ import io.github.vladimirmi.bakingapp.data.Step;
 public class MasterViewModel extends ViewModel {
 
     private final RecipeRepository repository;
+    private final PlayerHolder player;
 
     @Inject
-    public MasterViewModel(RecipeRepository repository) {
+    public MasterViewModel(RecipeRepository repository, PlayerHolder player) {
         this.repository = repository;
+        this.player = player;
+    }
+
+    @Override
+    protected void onCleared() {
+        player.release();
     }
 
     List<Step> getSteps() {
@@ -33,5 +43,9 @@ public class MasterViewModel extends ViewModel {
 
     public LiveData<Integer> getSelectedStepPosition() {
         return repository.getSelectedStepPosition();
+    }
+
+    public Player getPlayer() {
+        return player.get();
     }
 }

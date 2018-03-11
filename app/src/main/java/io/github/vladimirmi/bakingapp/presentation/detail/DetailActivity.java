@@ -18,6 +18,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.di.Scopes;
+import io.github.vladimirmi.bakingapp.presentation.detail.ingredients.IngredientsFragment;
+import io.github.vladimirmi.bakingapp.presentation.detail.step.StepPagerAdapter;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 
 /**
@@ -32,6 +34,7 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.appbar) AppBarLayout appbar;
     @BindView(R.id.detail_container) FrameLayout detailContainer;
     @BindView(R.id.tabs) TabLayout tabs;
+    @BindView(R.id.playerContainer) FrameLayout playerContainer;
     @BindView(R.id.playerView) PlayerView playerView;
     @BindView(R.id.video_not_available) TextView videoNotAvail;
 
@@ -55,11 +58,15 @@ public class DetailActivity extends AppCompatActivity {
         viewModel = Scopes.getViewModel(this, DetailViewModel.class);
 
 
-        //noinspection ConstantConditions
-        if (viewModel.getSelectedStepPosition().getValue() != -1) {
-            setupStepPager();
-            setupPlayer();
-        }
+        viewModel.getSelectedStepPosition().observe(this, position -> {
+            if (position != -1) {
+                setupStepPager();
+                setupPlayer();
+            } else {
+                setupIngredients();
+            }
+        });
+
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -85,7 +92,6 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void setupPlayer() {
         playerView.setPlayer(viewModel.getPlayer());
         viewModel.isCanPlayVideo().observe(this,
@@ -93,6 +99,15 @@ public class DetailActivity extends AppCompatActivity {
                     playerView.setVisibility(can ? View.VISIBLE : View.GONE);
                     videoNotAvail.setVisibility(can ? View.GONE : View.VISIBLE);
                 });
+    }
+
+    private void setupIngredients() {
+        tabs.setVisibility(View.GONE);
+        playerContainer.setVisibility(View.GONE);
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.detail_container, new IngredientsFragment())
+                .commit();
     }
 
     @Override

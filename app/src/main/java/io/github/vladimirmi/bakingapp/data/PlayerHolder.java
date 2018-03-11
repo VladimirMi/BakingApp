@@ -15,6 +15,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.di.Scopes;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 10.03.2018.
@@ -31,6 +32,7 @@ public class PlayerHolder {
 
     public SimpleExoPlayer get() {
         if (player == null) {
+            Timber.d("create player");
             player = ExoPlayerFactory.newSimpleInstance(Scopes.appContext(),
                     new DefaultTrackSelector());
         }
@@ -39,6 +41,7 @@ public class PlayerHolder {
 
     public void release() {
         if (player != null) {
+            Timber.d("release player");
             player.stop();
             player.release();
             player = null;

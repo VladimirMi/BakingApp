@@ -10,10 +10,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.bakingapp.data.Ingredient;
 import io.github.vladimirmi.bakingapp.data.PlayerHolder;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.data.Step;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 09.03.2018.
@@ -26,14 +26,12 @@ public class DetailViewModel extends ViewModel {
 
     @Inject
     public DetailViewModel(RecipeRepository repository, PlayerHolder player) {
-        Timber.e("DetailViewModel: ");
         this.repository = repository;
         this.player = player;
     }
 
     @Override
     protected void onCleared() {
-        Timber.e("onCleared: ");
         player.release();
     }
 
@@ -58,5 +56,9 @@ public class DetailViewModel extends ViewModel {
             Step step = getSteps().get(position);
             return !step.getVideoURL().isEmpty();
         });
+    }
+
+    public List<Ingredient> getIngredients() {
+        return repository.getSelectedRecipe().getIngredients();
     }
 }

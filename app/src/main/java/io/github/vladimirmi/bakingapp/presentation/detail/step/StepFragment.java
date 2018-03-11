@@ -1,4 +1,4 @@
-package io.github.vladimirmi.bakingapp.presentation.detail;
+package io.github.vladimirmi.bakingapp.presentation.detail.step;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,6 +13,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Step;
+import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 
 /**

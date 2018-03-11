@@ -1,17 +1,25 @@
 package io.github.vladimirmi.bakingapp.presentation.master;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.TextView;
+
+import com.google.android.exoplayer2.ui.PlayerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
+import io.github.vladimirmi.bakingapp.presentation.detail.ingredients.IngredientsFragment;
+import io.github.vladimirmi.bakingapp.presentation.detail.step.StepFragment;
 
 /**
  * An activity representing a list of Recipe entities. This activity
@@ -25,6 +33,8 @@ public class MasterActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.master_list) RecyclerView stepsList;
+    @BindView(R.id.ingredients) TextView ingredients;
+    PlayerView playerView;
 
     private boolean twoPane;
     private MasterViewModel viewModel;
@@ -35,21 +45,45 @@ public class MasterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_master);
         ButterKnife.bind(this);
 
-        if (findViewById(R.id.detail_container) != null) {
-            twoPane = true;
-        }
         viewModel = Scopes.getViewModel(this, MasterViewModel.class);
 
+        if (findViewById(R.id.detail_container) != null) {
+            twoPane = true;
+            setupPlayerView();
+        }
+
         setupToolbar();
-        setupRecycler();
+        setupIngredients();
+        setupSteps();
     }
 
     private void setupToolbar() {
         setSupportActionBar(toolbar);
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
-    @SuppressWarnings("ConstantConditions")
-    private void setupRecycler() {
+    private void setupPlayerView() {
+        playerView = findViewById(R.id.playerView);
+        playerView.setPlayer(viewModel.getPlayer());
+    }
+
+    private void setupIngredients() {
+        ingredients.setOnClickListener(v -> showIngredients());
+
+        viewModel.getSelectedStepPosition().observe(this, position -> {
+            if (position == -1) {
+                ingredients.setBackgroundColor(Color.LTGRAY);
+                if (twoPane) showIngredients();
+            } else {
+                ingredients.setBackgroundColor(Color.WHITE);
+            }
+        });
+    }
+
+    private void setupSteps() {
+        stepsList.setFocusable(false);
         LinearLayoutManager lm = new LinearLayoutManager(this);
         stepsList.setLayoutManager(lm);
         StepAdapter adapter = new StepAdapter(this::showStep);
@@ -60,13 +94,28 @@ public class MasterActivity extends AppCompatActivity {
         viewModel.getSelectedStepPosition().observe(this, adapter::selectItem);
     }
 
+    private void showIngredients() {
+        viewModel.selectStepPosition(-1);
+        if (twoPane) {
+            playerView.setVisibility(View.GONE);
+            Fragment fragment = new IngredientsFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, fragment)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class);
+            startActivity(intent);
+        }
+    }
+
     private void showStep(int position) {
         viewModel.selectStepPosition(position);
         if (twoPane) {
-//            StepFragment fragment = StepFragment.newInstance();
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.detail_container, fragment)
-//                    .commit();
+            playerView.setVisibility(View.VISIBLE);
+            Fragment fragment = StepFragment.newInstance(viewModel.getSteps().get(position));
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, fragment)
+                    .commit();
         } else {
             Intent intent = new Intent(this, DetailActivity.class);
             startActivity(intent);

@@ -16,6 +16,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:textAppearance="?attr/textAppearanceListItem"
         tools:text="Est azureus axona, cesaris. Cur amor velum?"
         />
 
@@ -24,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
+        android:textAppearance="?attr/textAppearanceListItem"
         android:layout_marginStart="8dp"
         tools:text="6 TBLSP"
         />

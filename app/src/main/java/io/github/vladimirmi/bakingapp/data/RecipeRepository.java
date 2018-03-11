@@ -59,18 +59,20 @@ public class RecipeRepository {
 
     public void selectRecipe(Recipe recipe) {
         selectedRecipe = recipe;
-        selectedStepPosition.setValue(-1);
+        selectStepPosition(-1);
     }
 
     public Recipe getSelectedRecipe() {
         return selectedRecipe;
     }
 
-    @SuppressWarnings("ConstantConditions")
     public void selectStepPosition(int position) {
-        if (selectedStepPosition.getValue() == position) return;
+        if (selectedStepPosition.getValue() != null && selectedStepPosition.getValue() == position) {
+            return;
+        }
 
         selectedStepPosition.setValue(position);
+        if (position == -1) return;
         Step step = selectedRecipe.getSteps().get(position);
         player.prepare(Uri.parse(step.getVideoURL()));
     }

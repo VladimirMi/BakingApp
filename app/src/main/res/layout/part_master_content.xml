@@ -1,10 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/master_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:listitem="@layout/item_step"
     tools:showIn="@layout/activity_master"
-    />
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <Button
+            android:id="@+id/ingredients"
+            style="@style/MasterItem"
+            android:text="@string/ingredients"
+            android:layout_marginBottom="16dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/steps"
+            android:layout_marginBottom="8dp"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/master_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_step"
+            />
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

@@ -20,11 +20,10 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
         Scope scope = Toothpick.openScopes(Scopes.APP_SCOPE, modelClass);
 
-        scope.installModules(new Module() {
-            {
-                bind(modelClass).singletonInScope();
-            }
-        });
+        scope.installModules(new Module() {{
+            bind(modelClass).singletonInScope();
+        }});
+
         T viewModel = scope.getInstance(modelClass);
 
         Toothpick.closeScope(modelClass);

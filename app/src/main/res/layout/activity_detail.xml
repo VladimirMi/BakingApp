@@ -37,6 +37,7 @@
         />
 
     <FrameLayout
+        android:id="@+id/playerContainer"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:background="@android:color/black"
@@ -52,9 +53,9 @@
             android:id="@+id/video_not_available"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Video not available"
-            android:textColor="@android:color/white"
             android:gravity="center"
+            android:text="@string/video_not_available"
+            android:textColor="@android:color/white"
             />
 
     </FrameLayout>
@@ -62,8 +63,8 @@
 
     <FrameLayout
         android:id="@+id/detail_container"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         />
 
 </LinearLayout>

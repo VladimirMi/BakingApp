@@ -1,4 +1,4 @@
-package io.github.vladimirmi.bakingapp.presentation.detail;
+package io.github.vladimirmi.bakingapp.presentation.detail.step;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
