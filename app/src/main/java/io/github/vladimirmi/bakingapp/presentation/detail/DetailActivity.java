@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.google.android.exoplayer2.ui.PlayerView;
 
@@ -32,6 +33,7 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.detail_container) FrameLayout detailContainer;
     @BindView(R.id.tabs) TabLayout tabs;
     @BindView(R.id.playerView) PlayerView playerView;
+    @BindView(R.id.video_not_available) TextView videoNotAvail;
 
     private DetailViewModel viewModel;
 
@@ -87,7 +89,10 @@ public class DetailActivity extends AppCompatActivity {
     private void setupPlayer() {
         playerView.setPlayer(viewModel.getPlayer());
         viewModel.isCanPlayVideo().observe(this,
-                can -> playerView.setVisibility(can ? View.VISIBLE : View.GONE));
+                can -> {
+                    playerView.setVisibility(can ? View.VISIBLE : View.GONE);
+                    videoNotAvail.setVisibility(can ? View.GONE : View.VISIBLE);
+                });
     }
 
     @Override

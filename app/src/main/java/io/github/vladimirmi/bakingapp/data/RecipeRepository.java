@@ -72,9 +72,7 @@ public class RecipeRepository {
 
         selectedStepPosition.setValue(position);
         Step step = selectedRecipe.getSteps().get(position);
-        if (!step.getVideoURL().isEmpty()) {
-            player.prepare(Uri.parse(step.getVideoURL()));
-        }
+        player.prepare(Uri.parse(step.getVideoURL()));
     }
 
     public LiveData<Integer> getSelectedStepPosition() {

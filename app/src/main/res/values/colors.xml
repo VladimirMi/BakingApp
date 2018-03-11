@@ -3,4 +3,6 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="player_controls_bg">#46000000</color>
+    <color name="player_button_bg">#88000000</color>
 </resources>

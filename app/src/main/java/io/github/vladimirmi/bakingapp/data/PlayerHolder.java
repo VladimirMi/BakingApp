@@ -39,12 +39,18 @@ public class PlayerHolder {
 
     public void release() {
         if (player != null) {
+            player.stop();
             player.release();
             player = null;
         }
     }
 
     public void prepare(Uri uri) {
+        if (uri.toString().isEmpty()) {
+            if (player != null) player.stop();
+            return;
+        }
+
         String appName = context.getString(R.string.app_name);
         DataSource.Factory factory = new DefaultDataSourceFactory(context,
                 Util.getUserAgent(context, appName));

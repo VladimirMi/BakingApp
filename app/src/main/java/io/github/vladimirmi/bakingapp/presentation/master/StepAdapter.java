@@ -51,6 +51,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.RecipeStepVH> 
 
     @Override
     public void onBindViewHolder(RecipeStepVH holder, int position) {
+        holder.select(position == selectedPosition);
         holder.bind(steps.get(position), position);
         holder.itemView.setOnClickListener(v -> listener.onItemClick(position));
     }
@@ -62,9 +63,8 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.RecipeStepVH> 
 
     public void selectItem(int position) {
         if (selectedPosition == position) return;
-        notifyItemChanged(position, true); // have payload -> select
-        notifyItemChanged(selectedPosition); // unselect
         selectedPosition = position;
+        notifyDataSetChanged();
     }
 
     static class RecipeStepVH extends RecyclerView.ViewHolder {
