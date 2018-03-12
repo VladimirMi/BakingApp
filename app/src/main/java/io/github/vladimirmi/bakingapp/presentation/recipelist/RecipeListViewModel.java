@@ -9,6 +9,8 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
+import io.github.vladimirmi.bakingapp.di.Scopes;
+import io.github.vladimirmi.bakingapp.widget.WidgetUpdateService;
 
 /**
  * Created by Vladimir Mikhalev 08.03.2018.
@@ -31,5 +33,10 @@ public class RecipeListViewModel extends ViewModel {
 
     public void selectRecipe(Recipe recipe) {
         repository.selectRecipe(recipe);
+    }
+
+    public void saveRecipeForWidget(int widgetId, Recipe recipe) {
+        repository.saveRecipeForWidget(widgetId, recipe);
+        WidgetUpdateService.startUpdateWidget(Scopes.appContext(), widgetId);
     }
 }

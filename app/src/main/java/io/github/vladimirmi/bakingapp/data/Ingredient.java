@@ -1,5 +1,7 @@
 package io.github.vladimirmi.bakingapp.data;
 
+import android.annotation.SuppressLint;
+
 /**
  * Ingredient model.
  */
@@ -10,15 +12,17 @@ public class Ingredient {
     private String measure;
     private String ingredient;
 
-    public float getQuantity() {
-        return quantity;
-    }
-
-    public String getMeasure() {
-        return measure;
+    @SuppressLint("DefaultLocale")
+    public String getQuantity() {
+        if (quantity % 1 == 0) {
+            return String.format("%.0f %s", quantity, measure);
+        } else {
+            return String.format("%.1f %s", quantity, measure);
+        }
     }
 
     public String getIngredient() {
         return ingredient;
     }
+
 }

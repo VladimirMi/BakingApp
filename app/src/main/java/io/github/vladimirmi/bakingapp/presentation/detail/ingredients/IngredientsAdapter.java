@@ -46,7 +46,7 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
     static class IngredientVH extends RecyclerView.ViewHolder {
 
         @BindView(R.id.ingredient_name) TextView ingredientName;
-        @BindView(R.id.ingredient_measure) TextView ingredientMeasure;
+        @BindView(R.id.ingredient_quantity) TextView ingredientMeasure;
 
         public IngredientVH(View itemView) {
             super(itemView);
@@ -56,8 +56,7 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         @SuppressLint("DefaultLocale")
         public void bind(Ingredient ingredient) {
             ingredientName.setText(ingredient.getIngredient());
-            String measure = String.format("%s %s", ingredient.getQuantity(), ingredient.getMeasure());
-            ingredientMeasure.setText(measure);
+            ingredientMeasure.setText(ingredient.getQuantity());
         }
     }
 }

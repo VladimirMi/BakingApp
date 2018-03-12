@@ -3,4 +3,8 @@
     <string name="ingredients">Ingredients</string>
     <string name="video_not_available">Video not available</string>
     <string name="steps">Steps</string>
+    <string name="appwidget_text">Recipe</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_updated">Widget updated</string>
+    <string name="choose_recipe">Choose recipe for widget</string>
 </resources>

@@ -21,6 +21,7 @@ import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.detail.ingredients.IngredientsFragment;
 import io.github.vladimirmi.bakingapp.presentation.detail.step.StepPagerAdapter;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
+import io.github.vladimirmi.bakingapp.presentation.recipelist.RecipeListActivity;
 
 /**
  * An activity representing a single Recipe entity detail screen. This
@@ -46,17 +47,14 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
         viewModel = Scopes.getViewModel(this, DetailViewModel.class);
 
+
+        if (getIntent() != null && getIntent().hasExtra(RecipeListActivity.EXTRA_RECIPE_ID)) {
+            int recipeId = getIntent().getIntExtra(RecipeListActivity.EXTRA_RECIPE_ID, 0);
+            viewModel.selectRecipe(recipeId);
+            setIntent(null);
+        }
 
         viewModel.getSelectedStepPosition().observe(this, position -> {
             if (position != -1) {
@@ -67,6 +65,16 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+        setupToolbar();
+    }
+
+    private void setupToolbar() {
+        toolbar.setTitle(viewModel.getSelectedRecipe().getName());
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @SuppressWarnings("ConstantConditions")

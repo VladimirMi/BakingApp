@@ -10,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.bakingapp.data.PlayerHolder;
+import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.data.Step;
 
@@ -47,5 +48,9 @@ public class MasterViewModel extends ViewModel {
 
     public Player getPlayer() {
         return player.get();
+    }
+
+    public Recipe getSelectedRecipe() {
+        return repository.getSelectedRecipe();
     }
 }

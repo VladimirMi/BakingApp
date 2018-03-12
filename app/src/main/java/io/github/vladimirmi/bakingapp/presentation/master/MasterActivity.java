@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,7 +33,7 @@ import io.github.vladimirmi.bakingapp.presentation.detail.step.StepFragment;
 public class MasterActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.master_list) RecyclerView stepsList;
+    @BindView(R.id.steps_list) RecyclerView stepsList;
     @BindView(R.id.ingredients) TextView ingredients;
     PlayerView playerView;
 
@@ -58,9 +59,11 @@ public class MasterActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
+        toolbar.setTitle(viewModel.getSelectedRecipe().getName());
         setSupportActionBar(toolbar);
-        if (getActionBar() != null) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 

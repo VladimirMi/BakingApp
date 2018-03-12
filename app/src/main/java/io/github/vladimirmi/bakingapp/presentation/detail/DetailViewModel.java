@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.bakingapp.data.Ingredient;
 import io.github.vladimirmi.bakingapp.data.PlayerHolder;
+import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.data.Step;
 
@@ -60,5 +61,13 @@ public class DetailViewModel extends ViewModel {
 
     public List<Ingredient> getIngredients() {
         return repository.getSelectedRecipe().getIngredients();
+    }
+
+    public void selectRecipe(int recipeId) {
+        repository.selectRecipe(repository.getRecipe(recipeId));
+    }
+
+    public Recipe getSelectedRecipe() {
+        return repository.getSelectedRecipe();
     }
 }

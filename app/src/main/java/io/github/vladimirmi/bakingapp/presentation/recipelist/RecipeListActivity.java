@@ -1,5 +1,6 @@
 package io.github.vladimirmi.bakingapp.presentation.recipelist;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,11 +24,14 @@ import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 
 public class RecipeListActivity extends AppCompatActivity {
 
+    public static final String EXTRA_RECIPE_ID = "EXTRA_RECIPE_ID";
+
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.appbar) AppBarLayout appbar;
     @BindView(R.id.recipe_list) RecyclerView recipeList;
 
     private RecipeListViewModel viewModel;
+    private boolean chooseRecipeForWidget;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,6 +42,11 @@ public class RecipeListActivity extends AppCompatActivity {
 
         setupToolbar();
         setupRecycler();
+
+        chooseRecipeForWidget = getIntent() != null && getIntent().hasExtra(AppWidgetManager.EXTRA_APPWIDGET_ID);
+        if (chooseRecipeForWidget) {
+            showToast(R.string.choose_recipe);
+        }
     }
 
     private void setupToolbar() {
@@ -53,8 +63,19 @@ public class RecipeListActivity extends AppCompatActivity {
     }
 
     private void showRecipe(Recipe recipe) {
-        viewModel.selectRecipe(recipe);
-        Intent intent = new Intent(this, MasterActivity.class);
-        startActivity(intent);
+        if (chooseRecipeForWidget) {
+            int widgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 0);
+            viewModel.saveRecipeForWidget(widgetId, recipe);
+            showToast(R.string.widget_updated);
+            finish();
+        } else {
+            viewModel.selectRecipe(recipe);
+            Intent intent = new Intent(this, MasterActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    private void showToast(int stringResId) {
+        Toast.makeText(this, stringResId, Toast.LENGTH_SHORT).show();
     }
 }

@@ -2,6 +2,7 @@ package io.github.vladimirmi.bakingapp.data;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Transformations;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.bakingapp.data.net.RestService;
+import io.github.vladimirmi.bakingapp.data.preferences.Preferences;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,15 +25,17 @@ public class RecipeRepository {
 
     private final PlayerHolder player;
     private final RestService rest;
+    private final Preferences prefs;
 
     private List<Recipe> recipesCache;
     private Recipe selectedRecipe;
     private MutableLiveData<Integer> selectedStepPosition = new MutableLiveData<>();
 
     @Inject
-    public RecipeRepository(RestService restService, PlayerHolder player) {
+    public RecipeRepository(RestService restService, PlayerHolder player, Preferences preferences) {
         this.rest = restService;
         this.player = player;
+        prefs = preferences;
     }
 
     public LiveData<List<Recipe>> getRecipes() {
@@ -57,6 +61,15 @@ public class RecipeRepository {
         return data;
     }
 
+    public Recipe getRecipe(int id) {
+        for (Recipe recipe : recipesCache) {
+            if (recipe.getId() == id) {
+                return recipe;
+            }
+        }
+        throw new IllegalStateException("Can not find recipe with given id");
+    }
+
     public void selectRecipe(Recipe recipe) {
         selectedRecipe = recipe;
         selectStepPosition(-1);
@@ -79,5 +92,26 @@ public class RecipeRepository {
 
     public LiveData<Integer> getSelectedStepPosition() {
         return selectedStepPosition;
+    }
+
+    public LiveData<Recipe> getRecipeForWidget(int widgetId) {
+        return Transformations.map(getRecipes(), recipes -> {
+            if (recipes != null && !recipes.isEmpty()) {
+                int defaultId = recipes.get(0).getId();
+
+                int recipeId = prefs.getRecipeId(widgetId, defaultId);
+
+                for (Recipe recipe : recipes) {
+                    if (recipe.getId() == recipeId) {
+                        return recipe;
+                    }
+                }
+            }
+            return null;
+        });
+    }
+
+    public void saveRecipeForWidget(int widgetId, Recipe recipe) {
+        prefs.saveRecipeId(widgetId, recipe.getId());
     }
 }
