@@ -23,11 +23,11 @@ public class RestServiceProvider {
     private RestServiceProvider() {
     }
 
-    public static RestService getService() {
-        return createRetrofit(createClient()).create(RestService.class);
+    public static RestService getService(OkHttpClient client) {
+        return createRetrofit(client).create(RestService.class);
     }
 
-    private static OkHttpClient createClient() {
+    public static OkHttpClient createClient() {
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)

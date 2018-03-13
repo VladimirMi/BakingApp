@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.ui.PlayerView;
@@ -17,6 +18,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
+import io.github.vladimirmi.bakingapp.Utils;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
 import io.github.vladimirmi.bakingapp.presentation.detail.ingredients.IngredientsFragment;
@@ -50,7 +52,7 @@ public class MasterActivity extends AppCompatActivity {
 
         if (findViewById(R.id.detail_container) != null) {
             twoPane = true;
-            setupPlayerView();
+            setupPlayer();
         }
 
         setupToolbar();
@@ -67,18 +69,30 @@ public class MasterActivity extends AppCompatActivity {
         }
     }
 
-    private void setupPlayerView() {
+    @SuppressWarnings("ConstantConditions")
+    private void setupPlayer() {
         playerView = findViewById(R.id.playerView);
+
         playerView.setPlayer(viewModel.getPlayer());
+
+        viewModel.isCanShowMultimedia().observe(this, can -> {
+            playerView.getOverlayFrameLayout().setVisibility(can ? View.GONE : View.VISIBLE);
+        });
+
+        ImageView artView = playerView.findViewById(R.id.exo_artwork);
+        viewModel.getSelectedStep().observe(this, step -> Utils.setImage(artView, step.getThumbnailURL()));
+
+        Utils.setAspectRatio(playerView);
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void setupIngredients() {
         ingredients.setOnClickListener(v -> showIngredients());
 
         viewModel.getSelectedStepPosition().observe(this, position -> {
-            if (position == -1) {
+            if (twoPane && position == -1) {
                 ingredients.setBackgroundColor(Color.LTGRAY);
-                if (twoPane) showIngredients();
+                showIngredients();
             } else {
                 ingredients.setBackgroundColor(Color.WHITE);
             }
@@ -87,14 +101,15 @@ public class MasterActivity extends AppCompatActivity {
 
     private void setupSteps() {
         stepsList.setFocusable(false);
-        LinearLayoutManager lm = new LinearLayoutManager(this);
-        stepsList.setLayoutManager(lm);
+        stepsList.setLayoutManager(new LinearLayoutManager(this));
         StepAdapter adapter = new StepAdapter(this::showStep);
         stepsList.setAdapter(adapter);
 
         adapter.setData(viewModel.getSteps());
 
-        viewModel.getSelectedStepPosition().observe(this, adapter::selectItem);
+        if (twoPane) {
+            viewModel.getSelectedStepPosition().observe(this, adapter::selectItem);
+        }
     }
 
     private void showIngredients() {

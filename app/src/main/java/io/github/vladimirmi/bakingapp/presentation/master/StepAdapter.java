@@ -24,7 +24,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepVH> {
 
     private final OnItemClickListener listener;
     private List<Step> steps = new ArrayList<>();
-    private int selectedPosition;
+    private int selectedPosition = -1;
 
     public StepAdapter(OnItemClickListener listener) {
         this.listener = listener;
@@ -83,7 +83,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepVH> {
         }
 
         void select(boolean selected) {
-            itemView.setBackgroundColor(selected ? Color.GRAY : Color.WHITE);
+            itemView.setBackgroundColor(selected ? Color.LTGRAY : Color.WHITE);
         }
     }
 

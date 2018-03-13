@@ -5,6 +5,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.SparseArray;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class Preferences {
 
     private static final String KEY_WIDGET_ID = "WIDGET_ID_";
@@ -12,6 +16,7 @@ public class Preferences {
 
     private SparseArray<Preference<Integer>> recipeIds = new SparseArray<>();
 
+    @Inject
     public Preferences(Context context) {
         prefs = context.getSharedPreferences("default", Context.MODE_PRIVATE);
     }

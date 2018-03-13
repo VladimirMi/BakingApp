@@ -2,6 +2,7 @@
 <android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:showIn="@layout/activity_master"
@@ -16,17 +17,17 @@
         <Button
             android:id="@+id/ingredients"
             style="@style/MasterItem"
-            android:text="@string/ingredients"
             android:layout_marginBottom="16dp"
+            android:text="@string/ingredients"
             />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/steps"
             android:layout_marginBottom="8dp"
-            android:paddingRight="16dp"
             android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/steps"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             />
 

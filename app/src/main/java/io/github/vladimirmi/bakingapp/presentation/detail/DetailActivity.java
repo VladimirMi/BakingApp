@@ -10,13 +10,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
+import io.github.vladimirmi.bakingapp.Utils;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.detail.ingredients.IngredientsFragment;
 import io.github.vladimirmi.bakingapp.presentation.detail.step.StepPagerAdapter;
@@ -35,12 +36,11 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.appbar) AppBarLayout appbar;
     @BindView(R.id.detail_container) FrameLayout detailContainer;
     @BindView(R.id.tabs) TabLayout tabs;
-    @BindView(R.id.playerContainer) FrameLayout playerContainer;
     @BindView(R.id.playerView) PlayerView playerView;
-    @BindView(R.id.video_not_available) TextView videoNotAvail;
 
     private DetailViewModel viewModel;
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,23 +49,21 @@ public class DetailActivity extends AppCompatActivity {
 
         viewModel = Scopes.getViewModel(this, DetailViewModel.class);
 
-
+        // init state if come from widget
         if (getIntent() != null && getIntent().hasExtra(RecipeListActivity.EXTRA_RECIPE_ID)) {
             int recipeId = getIntent().getIntExtra(RecipeListActivity.EXTRA_RECIPE_ID, 0);
             viewModel.selectRecipe(recipeId);
             setIntent(null);
         }
 
-        viewModel.getSelectedStepPosition().observe(this, position -> {
-            if (position != -1) {
-                setupStepPager();
-                setupPlayer();
-            } else {
-                setupIngredients();
-            }
-        });
+        if (viewModel.getSelectedStepPosition().getValue() == -1) {
+            setupIngredients();
+        } else {
+            setupSteps();
+        }
 
         setupToolbar();
+
     }
 
     private void setupToolbar() {
@@ -78,7 +76,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void setupStepPager() {
+    private void setupSteps() {
         ViewPager pager = (ViewPager) getLayoutInflater()
                 .inflate(R.layout.view_detail_steps, detailContainer, false);
         detailContainer.addView(pager);
@@ -98,20 +96,27 @@ public class DetailActivity extends AppCompatActivity {
                 viewModel.selectStepPosition(position);
             }
         });
+
+        setupPlayer();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void setupPlayer() {
         playerView.setPlayer(viewModel.getPlayer());
-        viewModel.isCanPlayVideo().observe(this,
-                can -> {
-                    playerView.setVisibility(can ? View.VISIBLE : View.GONE);
-                    videoNotAvail.setVisibility(can ? View.GONE : View.VISIBLE);
-                });
+
+        viewModel.isCanShowMultimedia().observe(this, can -> {
+            playerView.getOverlayFrameLayout().setVisibility(can ? View.GONE : View.VISIBLE);
+        });
+
+        ImageView artView = playerView.findViewById(R.id.exo_artwork);
+        viewModel.getSelectedStep().observe(this, step -> Utils.setImage(artView, step.getThumbnailURL()));
+
+        Utils.setAspectRatio(playerView);
     }
 
     private void setupIngredients() {
         tabs.setVisibility(View.GONE);
-        playerContainer.setVisibility(View.GONE);
+        playerView.setVisibility(View.GONE);
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.detail_container, new IngredientsFragment())

@@ -2,11 +2,10 @@ package io.github.vladimirmi.bakingapp.di;
 
 import android.content.Context;
 
-import io.github.vladimirmi.bakingapp.data.PlayerHolder;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.data.net.RestService;
 import io.github.vladimirmi.bakingapp.data.net.RestServiceProvider;
-import io.github.vladimirmi.bakingapp.data.preferences.Preferences;
+import okhttp3.OkHttpClient;
 import toothpick.config.Module;
 
 /**
@@ -17,10 +16,10 @@ public class AppModule extends Module {
 
     public AppModule(Context applicationContext) {
         bind(Context.class).toInstance(applicationContext);
-        bind(Preferences.class).toInstance(new Preferences(applicationContext));
-        bind(PlayerHolder.class).toInstance(new PlayerHolder(applicationContext));
-        bind(ViewModelFactory.class).toInstance(new ViewModelFactory());
-        bind(RestService.class).toInstance(RestServiceProvider.getService());
+
+        OkHttpClient client = RestServiceProvider.createClient();
+        bind(OkHttpClient.class).toInstance(client);
+        bind(RestService.class).toInstance(RestServiceProvider.getService(client));
 
         bind(RecipeRepository.class).singletonInScope();
     }

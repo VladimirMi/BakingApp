@@ -3,7 +3,6 @@ package io.github.vladimirmi.bakingapp.data;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -87,7 +86,7 @@ public class RecipeRepository {
         selectedStepPosition.setValue(position);
         if (position == -1) return;
         Step step = selectedRecipe.getSteps().get(position);
-        player.prepare(Uri.parse(step.getVideoURL()));
+        player.prepare(step.getVideoURL(), step.getThumbnailURL());
     }
 
     public LiveData<Integer> getSelectedStepPosition() {
@@ -113,5 +112,9 @@ public class RecipeRepository {
 
     public void saveRecipeForWidget(int widgetId, Recipe recipe) {
         prefs.saveRecipeId(widgetId, recipe.getId());
+    }
+
+    public LiveData<Boolean> isCanShowMultimedia() {
+        return player.canShowMultimedia;
     }
 }

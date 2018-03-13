@@ -1,6 +1,7 @@
 package io.github.vladimirmi.bakingapp.presentation.master;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 
 import com.google.android.exoplayer2.Player;
@@ -18,13 +19,13 @@ import io.github.vladimirmi.bakingapp.data.Step;
  * Created by Vladimir Mikhalev 09.03.2018.
  */
 
-public class MasterViewModel extends ViewModel {
+class MasterViewModel extends ViewModel {
 
     private final RecipeRepository repository;
     private final PlayerHolder player;
 
     @Inject
-    public MasterViewModel(RecipeRepository repository, PlayerHolder player) {
+    MasterViewModel(RecipeRepository repository, PlayerHolder player) {
         this.repository = repository;
         this.player = player;
     }
@@ -38,19 +39,27 @@ public class MasterViewModel extends ViewModel {
         return repository.getSelectedRecipe().getSteps();
     }
 
-    public void selectStepPosition(int position) {
+    void selectStepPosition(int position) {
         repository.selectStepPosition(position);
     }
 
-    public LiveData<Integer> getSelectedStepPosition() {
+    LiveData<Integer> getSelectedStepPosition() {
         return repository.getSelectedStepPosition();
     }
 
-    public Player getPlayer() {
+    LiveData<Step> getSelectedStep() {
+        return Transformations.map(getSelectedStepPosition(), position -> getSteps().get(position));
+    }
+
+    Player getPlayer() {
         return player.get();
     }
 
-    public Recipe getSelectedRecipe() {
+    Recipe getSelectedRecipe() {
         return repository.getSelectedRecipe();
+    }
+
+    LiveData<Boolean> isCanShowMultimedia() {
+        return repository.isCanShowMultimedia();
     }
 }

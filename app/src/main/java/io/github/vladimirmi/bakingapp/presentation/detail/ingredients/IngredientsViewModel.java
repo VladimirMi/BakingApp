@@ -14,16 +14,16 @@ import io.github.vladimirmi.bakingapp.data.RecipeRepository;
  * Created by Vladimir Mikhalev 09.03.2018.
  */
 
-public class IngredientsViewModel extends ViewModel {
+class IngredientsViewModel extends ViewModel {
 
     private final RecipeRepository repository;
 
     @Inject
-    public IngredientsViewModel(RecipeRepository repository, PlayerHolder player) {
+    IngredientsViewModel(RecipeRepository repository, PlayerHolder player) {
         this.repository = repository;
     }
 
-    public List<Ingredient> getIngredients() {
+    List<Ingredient> getIngredients() {
         return repository.getSelectedRecipe().getIngredients();
     }
 }

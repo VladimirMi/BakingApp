@@ -4,6 +4,8 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
+import javax.inject.Singleton;
+
 import toothpick.Scope;
 import toothpick.Toothpick;
 import toothpick.config.Module;
@@ -12,6 +14,7 @@ import toothpick.config.Module;
  * Created by Vladimir Mikhalev 08.03.2018.
  */
 
+@Singleton
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
     @NonNull
