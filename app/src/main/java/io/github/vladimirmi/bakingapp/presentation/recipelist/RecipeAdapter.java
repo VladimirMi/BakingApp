@@ -1,11 +1,15 @@
 package io.github.vladimirmi.bakingapp.presentation.recipelist;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +60,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
 
         @BindView(R.id.recipe_image) ImageView recipeImage;
         @BindView(R.id.recipe_name) TextView recipeName;
+        @BindView(R.id.recipe_servings) TextView recipeServings;
 
         RecipeVH(View itemView) {
             super(itemView);
@@ -63,7 +68,21 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
         }
 
         void bind(Recipe recipe) {
+            Context context = recipeImage.getContext();
+            Glide.with(context).load(recipe.getImage())
+                    .centerCrop()
+                    .placeholder(R.drawable.cook_hat)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .crossFade()
+                    .into(recipeImage);
+
             recipeName.setText(recipe.getName());
+            recipeServings.setText(context.getResources().getQuantityString(
+                    R.plurals.recipe_serving,
+                    recipe.getServings(),
+                    recipe.getServings()
+            ));
         }
     }
 

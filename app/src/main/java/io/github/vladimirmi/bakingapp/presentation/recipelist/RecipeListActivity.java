@@ -9,14 +9,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
+import io.github.vladimirmi.bakingapp.Utils;
 import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
+import timber.log.Timber;
 
 /**
  * An activity representing a list of Recipes.
@@ -54,7 +57,7 @@ public class RecipeListActivity extends AppCompatActivity {
     }
 
     private void setupRecycler() {
-        GridLayoutManager lm = new GridLayoutManager(this, 1);
+        GridLayoutManager lm = new GridLayoutManager(this, calculateSpanCount());
         recipeList.setLayoutManager(lm);
         RecipeAdapter adapter = new RecipeAdapter(this::showRecipe);
         recipeList.setAdapter(adapter);
@@ -77,5 +80,20 @@ public class RecipeListActivity extends AppCompatActivity {
 
     private void showToast(int stringResId) {
         Toast.makeText(this, stringResId, Toast.LENGTH_SHORT).show();
+    }
+
+    private int calculateSpanCount() {
+        final int maxPosterWidth = (int) getResources().getDimension(R.dimen.card_max_width);
+
+        int spanCount = 0;
+        DisplayMetrics displayMetrics = Utils.getDisplayMetrics(this);
+        int posterWidthDp;
+        do {
+            spanCount++;
+            posterWidthDp = displayMetrics.widthPixels / spanCount;
+        } while (posterWidthDp >= maxPosterWidth);
+
+        Timber.e("calculateSpanCount: %s", spanCount);
+        return spanCount;
     }
 }

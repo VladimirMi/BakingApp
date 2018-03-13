@@ -1,10 +1,17 @@
 <resources>
     <string name="app_name">BakingApp</string>
+
     <string name="ingredients">Ingredients</string>
     <string name="video_not_available">Video not available</string>
     <string name="steps">Steps</string>
-    <string name="appwidget_text">Recipe</string>
     <string name="add_widget">Add widget</string>
     <string name="widget_updated">Widget updated</string>
     <string name="choose_recipe">Choose recipe for widget</string>
+
+    <string name="recipe_preview">Recipe preview</string>
+
+    <plurals name="recipe_serving">
+        <item quantity="one">%d serving</item>
+        <item quantity="other">%d servings</item>
+    </plurals>
 </resources>
