@@ -40,7 +40,7 @@ public class RecipeRepository {
     public LiveData<List<Recipe>> getRecipes() {
         final MutableLiveData<List<Recipe>> data = new MutableLiveData<>();
         if (recipesCache != null) {
-            data.setValue(recipesCache);
+            data.postValue(recipesCache);
         } else {
 
             rest.getRecipes().enqueue(new Callback<List<Recipe>>() {
@@ -48,7 +48,7 @@ public class RecipeRepository {
                 public void onResponse(@NonNull Call<List<Recipe>> call, @NonNull Response<List<Recipe>> response) {
                     List<Recipe> recipes = response.body();
                     recipesCache = recipes;
-                    data.setValue(recipes);
+                    data.postValue(recipes);
                 }
 
                 @Override
@@ -60,13 +60,15 @@ public class RecipeRepository {
         return data;
     }
 
-    public Recipe getRecipe(int id) {
-        for (Recipe recipe : recipesCache) {
-            if (recipe.getId() == id) {
-                return recipe;
+    public LiveData<Recipe> getRecipe(int id) {
+        return Transformations.map(getRecipes(), recipes -> {
+            for (Recipe recipe : recipes) {
+                if (recipe.getId() == id) {
+                    return recipe;
+                }
             }
-        }
-        throw new IllegalStateException("Can not find recipe with given id");
+            throw new IllegalStateException("Can not find recipe with given id " + id);
+        });
     }
 
     public void selectRecipe(Recipe recipe) {

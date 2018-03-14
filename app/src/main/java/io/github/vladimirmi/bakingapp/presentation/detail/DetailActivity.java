@@ -84,7 +84,7 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        viewModel.releasePlayer();
+        if (isStep) viewModel.releasePlayer();
         super.onPause();
     }
 

@@ -9,10 +9,10 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.di.Scopes;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 12.03.2018.
@@ -54,11 +54,11 @@ public class WidgetUpdateService extends Service {
             public void onChanged(@Nullable Recipe recipe) {
                 BakingWidgetProvider.updateAppWidget(getApplicationContext(),
                         appWidgetManager, widgetId, recipe);
+                appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.widget_ingredients_list);
 
                 liveData.removeObserver(this);
 
-                boolean stopSelfResult = stopSelfResult(startId);
-                Timber.e("WidgetUpdateService stopself %s", stopSelfResult);
+                stopSelfResult(startId);
             }
         });
 

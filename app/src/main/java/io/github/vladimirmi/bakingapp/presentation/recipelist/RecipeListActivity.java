@@ -19,7 +19,6 @@ import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 import io.github.vladimirmi.bakingapp.utils.Utils;
-import timber.log.Timber;
 
 /**
  * An activity representing a list of Recipes.
@@ -70,7 +69,7 @@ public class RecipeListActivity extends AppCompatActivity {
             int widgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 0);
             viewModel.saveRecipeForWidget(widgetId, recipe);
             showToast(R.string.widget_updated);
-            finish();
+            finishAffinity();
         } else {
             viewModel.selectRecipe(recipe);
             Intent intent = new Intent(this, MasterActivity.class);
@@ -93,7 +92,6 @@ public class RecipeListActivity extends AppCompatActivity {
             posterWidthDp = displayMetrics.widthPixels / spanCount;
         } while (posterWidthDp >= maxPosterWidth);
 
-        Timber.e("calculateSpanCount: %s", spanCount);
         return spanCount;
     }
 }

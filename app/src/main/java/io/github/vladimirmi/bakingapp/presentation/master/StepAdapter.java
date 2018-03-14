@@ -11,8 +11,6 @@ import android.widget.Button;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Step;
 
@@ -53,7 +51,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepVH> {
     public void onBindViewHolder(StepVH holder, int position) {
         holder.select(position == selectedPosition);
         holder.bind(steps.get(position), position);
-        holder.stepBtn.setOnClickListener(v -> listener.onItemClick(position));
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(position));
     }
 
     @Override
@@ -69,17 +67,19 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepVH> {
 
     static class StepVH extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.step) Button stepBtn;
-
         StepVH(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
         }
 
+        @SuppressLint("DefaultLocale")
         void bind(Step step, int position) {
-            @SuppressLint("DefaultLocale")
-            String text = String.format("%d. %s", position, step.getShortDescription());
-            stepBtn.setText(text);
+            String text;
+            if (position == 0) {
+                text = step.getShortDescription();
+            } else {
+                text = String.format("%d. %s", position, step.getShortDescription());
+            }
+            ((Button) itemView).setText(text);
         }
 
         void select(boolean selected) {

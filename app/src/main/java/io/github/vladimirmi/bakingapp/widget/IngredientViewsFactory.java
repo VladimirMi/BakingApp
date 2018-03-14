@@ -1,7 +1,10 @@
 package io.github.vladimirmi.bakingapp.widget;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -10,6 +13,7 @@ import java.util.List;
 
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Ingredient;
+import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 
@@ -22,27 +26,33 @@ public class IngredientViewsFactory implements RemoteViewsService.RemoteViewsFac
     private final RecipeRepository repository;
     private final Context context;
     private List<Ingredient> ingredients = new ArrayList<>();
-    private int recipeId;
+    private int widgetId;
 
-    public IngredientViewsFactory(Context context, int recipeId) {
+    public IngredientViewsFactory(Context context, int widgetId) {
         repository = Scopes.appScope().getInstance(RecipeRepository.class);
         this.context = context;
-        this.recipeId = recipeId;
+        this.widgetId = widgetId;
     }
 
     @Override
     public void onCreate() {
-        ingredients = repository.getRecipe(recipeId).getIngredients();
+        LiveData<Recipe> data = repository.getRecipeForWidget(widgetId);
+        data.observeForever(new Observer<Recipe>() {
+            @Override
+            public void onChanged(@Nullable Recipe recipe) {
+                ingredients = recipe.getIngredients();
+                data.removeObserver(this);
+            }
+        });
     }
 
     @Override
     public void onDataSetChanged() {
-        ingredients = repository.getRecipe(recipeId).getIngredients();
+        ingredients = repository.getRecipeForWidget(widgetId).getValue().getIngredients();
     }
 
     @Override
     public void onDestroy() {
-
     }
 
     @Override

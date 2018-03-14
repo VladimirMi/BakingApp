@@ -1,8 +1,10 @@
 package io.github.vladimirmi.bakingapp.presentation.detail;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
+import android.support.annotation.Nullable;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -55,7 +57,14 @@ class DetailViewModel extends ViewModel {
     }
 
     void selectRecipe(int recipeId) {
-        repository.selectRecipe(repository.getRecipe(recipeId));
+        LiveData<Recipe> data = repository.getRecipe(recipeId);
+        data.observeForever(new Observer<Recipe>() {
+            @Override
+            public void onChanged(@Nullable Recipe recipe) {
+                repository.selectRecipe(recipe);
+                data.removeObserver(this);
+            }
+        });
     }
 
     Recipe getSelectedRecipe() {

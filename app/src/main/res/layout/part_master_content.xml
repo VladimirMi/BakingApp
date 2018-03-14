@@ -17,6 +17,7 @@
         <Button
             android:id="@+id/ingredients"
             style="@style/MasterItem"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:layout_marginBottom="16dp"
             android:text="@string/ingredients"
             />

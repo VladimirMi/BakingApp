@@ -58,7 +58,7 @@ public class BakingWidgetProvider extends AppWidgetProvider {
 
 
         Intent adapterIntent = new Intent(context, IngredientViewsService.class);
-        adapterIntent.putExtra(RecipeListActivity.EXTRA_RECIPE_ID, recipe.getId());
+        adapterIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
         views.setRemoteAdapter(R.id.widget_ingredients_list, adapterIntent);
 
 

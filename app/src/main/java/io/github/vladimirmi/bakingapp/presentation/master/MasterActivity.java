@@ -68,7 +68,7 @@ public class MasterActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        viewModel.releasePlayer();
+        if (twoPane) viewModel.releasePlayer();
         super.onPause();
     }
 

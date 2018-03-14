@@ -19,7 +19,6 @@ public class Utils {
     private Utils() {
     }
 
-
     public static void setImage(ImageView view, String url) {
         Glide.with(view.getContext()).load(url)
                 .centerCrop()

@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="16dp"
     >
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/ingredients"
         android:gravity="center"
         android:paddingBottom="16dp"
+        android:text="@string/ingredients"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         />
 
@@ -20,6 +21,7 @@
         android:id="@+id/ingredients_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:overScrollMode="never"
         tools:listitem="@layout/item_ingredient"
         />
 

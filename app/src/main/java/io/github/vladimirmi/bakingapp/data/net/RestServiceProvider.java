@@ -5,6 +5,7 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
@@ -30,6 +31,7 @@ public class RestServiceProvider {
     public static OkHttpClient createClient() {
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                 .connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
                 .writeTimeout(WRITE_TIMEOUT, TimeUnit.MILLISECONDS)
