@@ -5,6 +5,7 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import java.util.List;
 
@@ -23,6 +24,8 @@ class DetailViewModel extends ViewModel {
 
     private final RecipeRepository repository;
     private final PlayerHolder player;
+    private long currentPosition;
+    private boolean isPlayed;
 
     @Inject
     DetailViewModel(RecipeRepository repository, PlayerHolder player) {
@@ -51,10 +54,6 @@ class DetailViewModel extends ViewModel {
         repository.selectStepPosition(position);
     }
 
-    Player getPlayer() {
-        return player.get();
-    }
-
     void selectRecipe(int recipeId) {
         repository.selectRecipe(repository.getRecipe(recipeId));
     }
@@ -65,5 +64,18 @@ class DetailViewModel extends ViewModel {
 
     LiveData<Boolean> isCanShowMultimedia() {
         return repository.isCanShowMultimedia();
+    }
+
+    Player getPlayer() {
+        SimpleExoPlayer simpleExoPlayer = player.get();
+        simpleExoPlayer.seekTo(currentPosition);
+        simpleExoPlayer.setPlayWhenReady(isPlayed);
+        return simpleExoPlayer;
+    }
+
+    void releasePlayer() {
+        currentPosition = player.get().getCurrentPosition();
+        isPlayed = player.get().getPlayWhenReady();
+        player.release();
     }
 }

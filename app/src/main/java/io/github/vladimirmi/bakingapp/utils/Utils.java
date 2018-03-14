@@ -1,4 +1,4 @@
-package io.github.vladimirmi.bakingapp;
+package io.github.vladimirmi.bakingapp.utils;
 
 import android.content.Context;
 import android.util.DisplayMetrics;

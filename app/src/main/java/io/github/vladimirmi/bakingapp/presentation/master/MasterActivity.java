@@ -18,11 +18,11 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
-import io.github.vladimirmi.bakingapp.Utils;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
 import io.github.vladimirmi.bakingapp.presentation.detail.ingredients.IngredientsFragment;
 import io.github.vladimirmi.bakingapp.presentation.detail.step.StepFragment;
+import io.github.vladimirmi.bakingapp.utils.Utils;
 
 /**
  * An activity representing a list of Recipe entities. This activity
@@ -52,12 +52,24 @@ public class MasterActivity extends AppCompatActivity {
 
         if (findViewById(R.id.detail_container) != null) {
             twoPane = true;
-            setupPlayer();
+            setupPlayerView();
         }
 
         setupToolbar();
         setupIngredients();
         setupSteps();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (twoPane) playerView.setPlayer(viewModel.getPlayer());
+    }
+
+    @Override
+    protected void onPause() {
+        viewModel.releasePlayer();
+        super.onPause();
     }
 
     private void setupToolbar() {
@@ -70,10 +82,8 @@ public class MasterActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void setupPlayer() {
+    private void setupPlayerView() {
         playerView = findViewById(R.id.playerView);
-
-        playerView.setPlayer(viewModel.getPlayer());
 
         viewModel.isCanShowMultimedia().observe(this, can -> {
             playerView.getOverlayFrameLayout().setVisibility(can ? View.GONE : View.VISIBLE);

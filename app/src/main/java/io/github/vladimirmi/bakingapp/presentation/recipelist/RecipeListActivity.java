@@ -15,10 +15,10 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
-import io.github.vladimirmi.bakingapp.Utils;
 import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
+import io.github.vladimirmi.bakingapp.utils.Utils;
 import timber.log.Timber;
 
 /**

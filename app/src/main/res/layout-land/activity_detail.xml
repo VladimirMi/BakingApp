@@ -1,11 +1,10 @@
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
+    android:fitsSystemWindows="false"
     >
 
     <android.support.design.widget.AppBarLayout
@@ -29,6 +28,7 @@
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/appbar"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         app:tabGravity="fill"
@@ -37,16 +37,18 @@
         app:tabTextColor="#FFF"
         />
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/playerView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        />
-
     <FrameLayout
         android:id="@+id/detail_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tabs"
         />
 
-</LinearLayout>
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:shutter_background_color="@android:color/black"
+        />
+
+</RelativeLayout>

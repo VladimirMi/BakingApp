@@ -15,7 +15,7 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import java.io.IOException;
@@ -46,6 +46,8 @@ public class PlayerHolder {
     private boolean canShowThumb;
     final MutableLiveData<Boolean> canShowMultimedia = new MutableLiveData<>();
     private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+    private String lastVideoUrl;
+    private String lastThumbUrl;
 
     @Inject
     public PlayerHolder(Context context) {
@@ -55,24 +57,27 @@ public class PlayerHolder {
 
     public SimpleExoPlayer get() {
         if (player == null) {
-            Timber.d("create player");
+            Timber.e("create player");
             player = ExoPlayerFactory.newSimpleInstance(Scopes.appContext(),
                     new DefaultTrackSelector());
 
             player.addListener(new Player.DefaultEventListener() {
                 @Override
                 public void onPlayerError(ExoPlaybackException error) {
-                    Timber.e(error.getMessage());
+                    Timber.e(error);
                     setCanShowVideo(false);
                 }
             });
+            if (lastVideoUrl != null && lastThumbUrl != null) {
+                prepare(lastVideoUrl, lastThumbUrl);
+            }
         }
         return player;
     }
 
     public void release() {
         if (player != null) {
-            Timber.d("release player");
+            Timber.e("release player");
             player.stop();
             player.release();
             player = null;
@@ -80,15 +85,16 @@ public class PlayerHolder {
     }
 
     public void prepare(String videoUrl, String thumbUrl) {
+        lastVideoUrl = videoUrl;
+        lastThumbUrl = thumbUrl;
         setCanShowThumb(true);
         setCanShowVideo(true);
         checkThumb(thumbUrl);
 
-        Uri videoUri = Uri.parse(videoUrl);
+        Uri videoUri = Uri.parse("http://techslides.com/demos/sample-videos/small.mp4");
 
         String appName = context.getString(R.string.app_name);
-        DataSource.Factory factory = new DefaultDataSourceFactory(context,
-                Util.getUserAgent(context, appName));
+        DataSource.Factory factory = new DefaultHttpDataSourceFactory(Util.getUserAgent(context, appName));
 
         MediaSource source = new ExtractorMediaSource.Factory(factory)
                 .setExtractorsFactory(new DefaultExtractorsFactory())
