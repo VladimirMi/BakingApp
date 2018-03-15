@@ -14,7 +14,7 @@ public class Preferences {
     private static final String KEY_WIDGET_ID = "WIDGET_ID_";
     private final SharedPreferences prefs;
 
-    private SparseArray<Preference<Integer>> recipeIds = new SparseArray<>();
+    private final SparseArray<Preference<Integer>> recipeIds = new SparseArray<>();
 
     @Inject
     public Preferences(Context context) {

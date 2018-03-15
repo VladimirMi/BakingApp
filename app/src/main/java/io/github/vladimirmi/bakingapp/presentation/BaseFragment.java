@@ -12,9 +12,10 @@ import timber.log.Timber;
  * Created by Vladimir Mikhalev 15.03.2018.
  */
 
+@SuppressWarnings("unused")
 public class BaseFragment extends Fragment {
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     protected <T> void bindData(Observable<T> observable, Consumer<? super T> onNext) {
         compositeDisposable.add(observable.subscribe(onNext, Timber::e));

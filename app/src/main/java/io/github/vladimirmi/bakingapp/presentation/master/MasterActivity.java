@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ import io.github.vladimirmi.bakingapp.utils.Utils;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
+@SuppressWarnings("WeakerAccess")
 public class MasterActivity extends BaseActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -65,7 +67,6 @@ public class MasterActivity extends BaseActivity {
             setIntent(null);
         }
 
-
         setupToolbar();
         setupIngredients();
         setupSteps();
@@ -81,6 +82,22 @@ public class MasterActivity extends BaseActivity {
     protected void onPause() {
         if (twoPane) viewModel.releasePlayer();
         super.onPause();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 
     private void setupToolbar() {
@@ -136,11 +153,11 @@ public class MasterActivity extends BaseActivity {
             playerView.setVisibility(View.GONE);
             Fragment fragment = new IngredientsFragment();
             getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                     .replace(R.id.detail_container, fragment)
                     .commit();
         } else {
-            Intent intent = new Intent(this, DetailActivity.class);
-            startActivity(intent);
+            startDetailActivity();
         }
     }
 
@@ -149,14 +166,19 @@ public class MasterActivity extends BaseActivity {
         if (twoPane) {
             playerView.setVisibility(View.VISIBLE);
             Utils.setAspectRatio(playerView);
-            Fragment fragment = StepFragment.newInstance(viewModel.getStep(position));
+            Fragment fragment = StepFragment.newInstance(viewModel.getSelectedStep().blockingFirst());
             getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                     .replace(R.id.detail_container, fragment)
                     .commit();
         } else {
-            Intent intent = new Intent(this, DetailActivity.class);
-            startActivity(intent);
+            startDetailActivity();
         }
     }
 
+    private void startDetailActivity() {
+        Intent intent = new Intent(this, DetailActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
 }

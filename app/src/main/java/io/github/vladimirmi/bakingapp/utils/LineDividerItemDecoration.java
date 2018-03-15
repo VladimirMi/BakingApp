@@ -15,7 +15,7 @@ import io.github.vladimirmi.bakingapp.R;
 
 public class LineDividerItemDecoration extends RecyclerView.ItemDecoration {
 
-    private Drawable mDivider;
+    private final Drawable mDivider;
 
     public LineDividerItemDecoration(Context context) {
         mDivider = ContextCompat.getDrawable(context, R.drawable.line_divider);

@@ -17,7 +17,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
-import io.github.vladimirmi.bakingapp.data.Recipe;
+import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 
 /**
  * Created by Vladimir Mikhalev 08.03.2018.

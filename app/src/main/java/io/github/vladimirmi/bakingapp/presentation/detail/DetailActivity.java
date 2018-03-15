@@ -31,6 +31,7 @@ import timber.log.Timber;
  * item details are presented side-by-side with a list of items
  * in a {@link MasterActivity}.
  */
+@SuppressWarnings("WeakerAccess")
 public class DetailActivity extends BaseActivity {
 
     public static final int CONTROLLER_SHOW_TIMEOUT_MS = 3000;
@@ -77,6 +78,22 @@ public class DetailActivity extends BaseActivity {
     protected void onPause() {
         if (isStep) viewModel.releasePlayer();
         super.onPause();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 
     private void setupToolbar() {
@@ -147,6 +164,7 @@ public class DetailActivity extends BaseActivity {
         playerView.setVisibility(View.GONE);
 
         getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .add(R.id.detail_container, new IngredientsFragment())
                 .commit();
     }
@@ -171,15 +189,5 @@ public class DetailActivity extends BaseActivity {
         Timber.e("resetHideTimer: ");
         leanBackHandler.removeCallbacks(enterLeanback);
         leanBackHandler.postDelayed(enterLeanback, CONTROLLER_SHOW_TIMEOUT_MS);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

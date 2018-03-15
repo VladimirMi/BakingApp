@@ -1,4 +1,4 @@
-package io.github.vladimirmi.bakingapp.data;
+package io.github.vladimirmi.bakingapp.data.entity;
 
 import android.annotation.SuppressLint;
 
@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
  * Ingredient model.
  */
 
+@SuppressWarnings("unused")
 public class Ingredient {
 
     private float quantity;

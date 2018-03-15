@@ -10,7 +10,7 @@ import android.net.Uri;
 import android.widget.RemoteViews;
 
 import io.github.vladimirmi.bakingapp.R;
-import io.github.vladimirmi.bakingapp.data.Recipe;
+import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 import io.github.vladimirmi.bakingapp.presentation.recipelist.RecipeListActivity;
 

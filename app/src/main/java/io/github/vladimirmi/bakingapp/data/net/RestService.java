@@ -2,7 +2,7 @@ package io.github.vladimirmi.bakingapp.data.net;
 
 import java.util.List;
 
-import io.github.vladimirmi.bakingapp.data.Recipe;
+import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 import io.reactivex.Single;
 import retrofit2.http.GET;
 

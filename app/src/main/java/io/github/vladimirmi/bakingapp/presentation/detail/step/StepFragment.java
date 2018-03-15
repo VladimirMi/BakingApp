@@ -12,7 +12,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.github.vladimirmi.bakingapp.R;
-import io.github.vladimirmi.bakingapp.data.Step;
+import io.github.vladimirmi.bakingapp.data.entity.Step;
 import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 
@@ -22,6 +22,7 @@ import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
  * in two-pane mode (on tablets) or a {@link DetailActivity}
  * on handsets.
  */
+@SuppressWarnings("WeakerAccess")
 public class StepFragment extends Fragment {
 
     private static final String STEP = "STEP";

@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.bakingapp.data.entity.Recipe;
+import io.github.vladimirmi.bakingapp.data.entity.Step;
 import io.github.vladimirmi.bakingapp.data.net.RestService;
 import io.github.vladimirmi.bakingapp.data.preferences.Preferences;
 import io.reactivex.Completable;
@@ -23,9 +25,9 @@ public class RecipeRepository {
     private final RestService rest;
     private final Preferences prefs;
 
-    private BehaviorRelay<List<Recipe>> recipes = BehaviorRelay.create();
-    private BehaviorRelay<Recipe> selectedRecipe = BehaviorRelay.create();
-    private BehaviorRelay<Integer> selectedStepPosition = BehaviorRelay.create();
+    private final BehaviorRelay<List<Recipe>> recipes = BehaviorRelay.create();
+    private final BehaviorRelay<Recipe> selectedRecipe = BehaviorRelay.create();
+    private final BehaviorRelay<Integer> selectedStepPosition = BehaviorRelay.create();
 
     @Inject
     public RecipeRepository(RestService restService, PlayerHolder player, Preferences preferences) {

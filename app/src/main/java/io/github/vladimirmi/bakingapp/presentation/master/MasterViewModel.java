@@ -10,12 +10,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.bakingapp.data.PlayerHolder;
-import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
-import io.github.vladimirmi.bakingapp.data.Step;
+import io.github.vladimirmi.bakingapp.data.entity.Recipe;
+import io.github.vladimirmi.bakingapp.data.entity.Step;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 09.03.2018.
@@ -45,7 +44,6 @@ class MasterViewModel extends ViewModel {
     }
 
     void selectStepPosition(int position) {
-        Timber.e("selectStepPosition: %s", position);
         repository.selectStepPosition(position);
     }
 
@@ -57,11 +55,6 @@ class MasterViewModel extends ViewModel {
     Observable<Step> getSelectedStep() {
         return repository.getSelectedStep()
                 .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    Step getStep(int position) {
-        return repository.getSelectedStep().blockingFirst();
-//        return getSteps().map(steps -> steps.get(position)).blockingFirst();
     }
 
     Observable<Recipe> getSelectedRecipe() {

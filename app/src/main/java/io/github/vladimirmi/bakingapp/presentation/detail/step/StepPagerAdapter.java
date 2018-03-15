@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.vladimirmi.bakingapp.data.Step;
+import io.github.vladimirmi.bakingapp.data.entity.Step;
 
 /**
  * Created by Vladimir Mikhalev 09.03.2018.

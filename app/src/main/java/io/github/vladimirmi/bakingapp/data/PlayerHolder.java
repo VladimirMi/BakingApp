@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -42,12 +43,12 @@ public class PlayerHolder {
 
     private SimpleExoPlayer player;
     private final Context context;
+    private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
     private boolean canShowVideo;
     private boolean canShowThumb;
-    final BehaviorRelay<Boolean> canShowMultimedia = BehaviorRelay.createDefault(false);
-    private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
     private String lastVideoUrl;
     private String lastThumbUrl;
+    final BehaviorRelay<Boolean> canShowMultimedia = BehaviorRelay.createDefault(false);
 
     @Inject
     public PlayerHolder(Context context) {
@@ -84,14 +85,14 @@ public class PlayerHolder {
     }
 
     public void prepare(String videoUrl, String thumbUrl) {
-        Timber.e("prepare player %s", videoUrl);
         lastVideoUrl = videoUrl;
         lastThumbUrl = thumbUrl;
         setCanShowThumb(true);
         setCanShowVideo(true);
         checkThumb(thumbUrl);
 
-        Uri videoUri = Uri.parse("http://techslides.com/demos/sample-videos/small.mp4");
+//        Uri videoUri = Uri.parse("http://techslides.com/demos/sample-videos/small.mp4");
+        Uri videoUri = Uri.parse(videoUrl);
 
         String appName = context.getString(R.string.app_name);
         DataSource.Factory factory = new DefaultHttpDataSourceFactory(Util.getUserAgent(context, appName));
@@ -100,9 +101,7 @@ public class PlayerHolder {
                 .setExtractorsFactory(new DefaultExtractorsFactory())
                 .createMediaSource(videoUri);
 
-        mainThreadHandler.post(() -> {
-            get().prepare(source);
-        });
+        mainThreadHandler.post(() -> get().prepare(source));
     }
 
     private void checkThumb(String thumbUrl) {
@@ -111,14 +110,14 @@ public class PlayerHolder {
             final Request req = new Request.Builder().url(thumbUrl).get().build();
             client.newCall(req).enqueue(new Callback() {
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     Timber.e(e);
                     setCanShowThumb(false);
                 }
 
                 @SuppressWarnings("ConstantConditions")
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (response.body() != null) {
                         MediaType mediaType = response.body().contentType();
                         if (mediaType.type().equals("image")) {

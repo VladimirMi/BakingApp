@@ -6,10 +6,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.bakingapp.data.Ingredient;
-import io.github.vladimirmi.bakingapp.data.PlayerHolder;
-import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
+import io.github.vladimirmi.bakingapp.data.entity.Ingredient;
+import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -22,7 +21,7 @@ class IngredientsViewModel extends ViewModel {
     private final RecipeRepository repository;
 
     @Inject
-    IngredientsViewModel(RecipeRepository repository, PlayerHolder player) {
+    IngredientsViewModel(RecipeRepository repository) {
         this.repository = repository;
     }
 

@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.vladimirmi.bakingapp.R;
-import io.github.vladimirmi.bakingapp.data.Ingredient;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
+import io.github.vladimirmi.bakingapp.data.entity.Ingredient;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 
 /**
@@ -20,8 +20,8 @@ import io.github.vladimirmi.bakingapp.di.Scopes;
 public class IngredientViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private final Context context;
+    private final int widgetId;
     private List<Ingredient> ingredients = new ArrayList<>();
-    private int widgetId;
 
     public IngredientViewsFactory(Context context, int widgetId) {
         this.context = context;

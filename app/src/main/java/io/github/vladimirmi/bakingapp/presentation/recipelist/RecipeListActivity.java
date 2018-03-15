@@ -14,7 +14,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
-import io.github.vladimirmi.bakingapp.data.Recipe;
+import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.BaseActivity;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
@@ -24,6 +24,7 @@ import io.github.vladimirmi.bakingapp.utils.Utils;
  * An activity representing a list of Recipes.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class RecipeListActivity extends BaseActivity {
 
     public static final String EXTRA_RECIPE_ID = "EXTRA_RECIPE_ID";
@@ -74,6 +75,7 @@ public class RecipeListActivity extends BaseActivity {
             viewModel.selectRecipe(recipe.getId());
             Intent intent = new Intent(this, MasterActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
     }
 

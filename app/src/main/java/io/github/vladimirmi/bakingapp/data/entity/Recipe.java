@@ -1,4 +1,4 @@
-package io.github.vladimirmi.bakingapp.data;
+package io.github.vladimirmi.bakingapp.data.entity;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import java.util.List;
  * Recipe model.
  */
 
+@SuppressWarnings("unused")
 public class Recipe {
 
     private int id;

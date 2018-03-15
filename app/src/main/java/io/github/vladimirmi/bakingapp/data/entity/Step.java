@@ -1,4 +1,4 @@
-package io.github.vladimirmi.bakingapp.data;
+package io.github.vladimirmi.bakingapp.data.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,6 +7,7 @@ import android.os.Parcelable;
  * Step model.
  */
 
+@SuppressWarnings({"unused", "CanBeFinal"})
 public class Step implements Parcelable {
 
     private int id;

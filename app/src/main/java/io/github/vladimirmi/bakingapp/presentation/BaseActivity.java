@@ -1,5 +1,6 @@
 package io.github.vladimirmi.bakingapp.presentation;
 
+import android.annotation.SuppressLint;
 import android.support.v7.app.AppCompatActivity;
 
 import io.reactivex.Observable;
@@ -12,9 +13,10 @@ import timber.log.Timber;
  * Created by Vladimir Mikhalev 15.03.2018.
  */
 
+@SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity {
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     protected <T> void bindData(Observable<T> observable, Consumer<? super T> onNext) {
         compositeDisposable.add(observable.subscribe(onNext, Timber::e));

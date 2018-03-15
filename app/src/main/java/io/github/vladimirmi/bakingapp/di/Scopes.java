@@ -34,14 +34,12 @@ public class Scopes {
         return ViewModelProviders.of(owner, viewModelFactory()).get(modelClass);
     }
 
-    public static ViewModelFactory viewModelFactory() {
-        return appScope().getInstance(ViewModelFactory.class);
-    }
-
     public static <T extends ViewModel> T getViewModel(@NonNull Fragment owner,
                                                        @NonNull Class<T> modelClass) {
         return ViewModelProviders.of(owner, viewModelFactory()).get(modelClass);
     }
 
-
+    private static ViewModelFactory viewModelFactory() {
+        return appScope().getInstance(ViewModelFactory.class);
+    }
 }

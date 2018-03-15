@@ -10,9 +10,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.bakingapp.data.PlayerHolder;
-import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
-import io.github.vladimirmi.bakingapp.data.Step;
+import io.github.vladimirmi.bakingapp.data.entity.Recipe;
+import io.github.vladimirmi.bakingapp.data.entity.Step;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 

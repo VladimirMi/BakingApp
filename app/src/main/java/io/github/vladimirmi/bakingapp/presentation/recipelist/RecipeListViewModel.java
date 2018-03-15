@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
+import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.widget.WidgetUpdateService;
 import io.reactivex.Single;

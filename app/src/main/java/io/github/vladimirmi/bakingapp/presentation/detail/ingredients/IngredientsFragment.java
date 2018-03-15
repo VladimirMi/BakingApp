@@ -21,6 +21,7 @@ import io.github.vladimirmi.bakingapp.presentation.BaseFragment;
  * Created by Vladimir Mikhalev 11.03.2018.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class IngredientsFragment extends BaseFragment {
 
     @BindView(R.id.ingredients_list) RecyclerView ingredientsList;

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.vladimirmi.bakingapp.R;
-import io.github.vladimirmi.bakingapp.data.Step;
+import io.github.vladimirmi.bakingapp.data.entity.Step;
 
 /**
  * Created by Vladimir Mikhalev 08.03.2018.
