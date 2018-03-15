@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +16,7 @@ import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.di.Scopes;
+import io.github.vladimirmi.bakingapp.presentation.BaseActivity;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 import io.github.vladimirmi.bakingapp.utils.Utils;
 
@@ -24,7 +24,7 @@ import io.github.vladimirmi.bakingapp.utils.Utils;
  * An activity representing a list of Recipes.
  */
 
-public class RecipeListActivity extends AppCompatActivity {
+public class RecipeListActivity extends BaseActivity {
 
     public static final String EXTRA_RECIPE_ID = "EXTRA_RECIPE_ID";
 
@@ -61,7 +61,7 @@ public class RecipeListActivity extends AppCompatActivity {
         RecipeAdapter adapter = new RecipeAdapter(this::showRecipe);
         recipeList.setAdapter(adapter);
 
-        viewModel.getRecipes().observe(this, adapter::setData);
+        bindData(viewModel.getRecipes(), adapter::setData);
     }
 
     private void showRecipe(Recipe recipe) {
@@ -71,7 +71,7 @@ public class RecipeListActivity extends AppCompatActivity {
             showToast(R.string.widget_updated);
             finishAffinity();
         } else {
-            viewModel.selectRecipe(recipe);
+            viewModel.selectRecipe(recipe.getId());
             Intent intent = new Intent(this, MasterActivity.class);
             startActivity(intent);
         }

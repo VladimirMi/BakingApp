@@ -1,9 +1,6 @@
 package io.github.vladimirmi.bakingapp.data;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Transformations;
-import android.support.annotation.NonNull;
+import com.jakewharton.rxrelay2.BehaviorRelay;
 
 import java.util.List;
 
@@ -11,10 +8,10 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.bakingapp.data.net.RestService;
 import io.github.vladimirmi.bakingapp.data.preferences.Preferences;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import timber.log.Timber;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Created by Vladimir Mikhalev 07.03.2018.
@@ -26,9 +23,9 @@ public class RecipeRepository {
     private final RestService rest;
     private final Preferences prefs;
 
-    private List<Recipe> recipesCache;
-    private Recipe selectedRecipe;
-    private MutableLiveData<Integer> selectedStepPosition = new MutableLiveData<>();
+    private BehaviorRelay<List<Recipe>> recipes = BehaviorRelay.create();
+    private BehaviorRelay<Recipe> selectedRecipe = BehaviorRelay.create();
+    private BehaviorRelay<Integer> selectedStepPosition = BehaviorRelay.create();
 
     @Inject
     public RecipeRepository(RestService restService, PlayerHolder player, Preferences preferences) {
@@ -37,86 +34,73 @@ public class RecipeRepository {
         prefs = preferences;
     }
 
-    public LiveData<List<Recipe>> getRecipes() {
-        final MutableLiveData<List<Recipe>> data = new MutableLiveData<>();
-        if (recipesCache != null) {
-            data.postValue(recipesCache);
+    public Single<List<Recipe>> getRecipes() {
+        if (recipes.hasValue()) {
+            return recipes.firstOrError();
         } else {
-
-            rest.getRecipes().enqueue(new Callback<List<Recipe>>() {
-                @Override
-                public void onResponse(@NonNull Call<List<Recipe>> call, @NonNull Response<List<Recipe>> response) {
-                    List<Recipe> recipes = response.body();
-                    recipesCache = recipes;
-                    data.postValue(recipes);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<List<Recipe>> call, @NonNull Throwable t) {
-                    Timber.e(t);
-                }
-            });
+            return rest.getRecipes()
+                    .doOnSuccess(res -> recipes.accept(res));
         }
-        return data;
     }
 
-    public LiveData<Recipe> getRecipe(int id) {
-        return Transformations.map(getRecipes(), recipes -> {
-            for (Recipe recipe : recipes) {
-                if (recipe.getId() == id) {
-                    return recipe;
-                }
-            }
-            throw new IllegalStateException("Can not find recipe with given id " + id);
-        });
+    public Completable selectRecipe(int recipeId) {
+        return getRecipes().flatMapObservable(Observable::fromIterable)
+                .filter(recipe -> recipe.getId() == recipeId)
+                .doOnNext(recipe -> {
+                    selectedRecipe.accept(recipe);
+                    selectStepPosition(-1);
+                })
+                .ignoreElements();
     }
 
-    public void selectRecipe(Recipe recipe) {
-        selectedRecipe = recipe;
-        selectStepPosition(-1);
-    }
-
-    public Recipe getSelectedRecipe() {
+    public Observable<Recipe> getSelectedRecipe() {
         return selectedRecipe;
     }
 
     public void selectStepPosition(int position) {
-        if (selectedStepPosition.getValue() != null && selectedStepPosition.getValue() == position) {
-            return;
+        if (!selectedStepPosition.hasValue() || selectedStepPosition.getValue() != position) {
+            selectedStepPosition.accept(position);
+            if (position != -1) {
+                Step step = getSelectedStep().blockingFirst();
+                player.prepare(step.getVideoURL(), step.getThumbnailURL());
+            }
         }
-
-        selectedStepPosition.setValue(position);
-        if (position == -1) return;
-        Step step = selectedRecipe.getSteps().get(position);
-        player.prepare(step.getVideoURL(), step.getThumbnailURL());
     }
 
-    public LiveData<Integer> getSelectedStepPosition() {
+    public Observable<Integer> getSelectedStepPosition() {
         return selectedStepPosition;
     }
 
-    public LiveData<Recipe> getRecipeForWidget(int widgetId) {
-        return Transformations.map(getRecipes(), recipes -> {
-            if (recipes != null && !recipes.isEmpty()) {
-                int defaultId = recipes.get(0).getId();
-
-                int recipeId = prefs.getRecipeId(widgetId, defaultId);
-
-                for (Recipe recipe : recipes) {
-                    if (recipe.getId() == recipeId) {
-                        return recipe;
-                    }
-                }
-            }
-            return null;
-        });
+    public Observable<Step> getSelectedStep() {
+        return selectedStepPosition.filter(pos -> pos != -1)
+                .map(pos -> selectedRecipe.getValue().getSteps().get(pos));
     }
+
+    public Maybe<Recipe> getRecipeForWidget(int widgetId) {
+        return getRecipes().filter(res -> !res.isEmpty())
+                .map(res -> {
+                    int defaultId = res.get(0).getId();
+
+                    int recipeId = prefs.getRecipeId(widgetId, defaultId);
+                    return findRecipe(res, recipeId);
+                });
+    }
+
 
     public void saveRecipeForWidget(int widgetId, Recipe recipe) {
         prefs.saveRecipeId(widgetId, recipe.getId());
     }
 
-    public LiveData<Boolean> isCanShowMultimedia() {
+    public Observable<Boolean> isCanShowMultimedia() {
         return player.canShowMultimedia;
+    }
+
+    private Recipe findRecipe(List<Recipe> recipes, int id) {
+        for (Recipe recipe : recipes) {
+            if (recipe.getId() == id) {
+                return recipe;
+            }
+        }
+        throw new IllegalStateException("Can not find recipe with given id");
     }
 }

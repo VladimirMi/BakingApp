@@ -1,6 +1,5 @@
 package io.github.vladimirmi.bakingapp.data;
 
-import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
@@ -17,6 +16,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.jakewharton.rxrelay2.BehaviorRelay;
 
 import java.io.IOException;
 
@@ -44,7 +44,7 @@ public class PlayerHolder {
     private final Context context;
     private boolean canShowVideo;
     private boolean canShowThumb;
-    final MutableLiveData<Boolean> canShowMultimedia = new MutableLiveData<>();
+    final BehaviorRelay<Boolean> canShowMultimedia = BehaviorRelay.createDefault(false);
     private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
     private String lastVideoUrl;
     private String lastThumbUrl;
@@ -52,7 +52,6 @@ public class PlayerHolder {
     @Inject
     public PlayerHolder(Context context) {
         this.context = context;
-        canShowMultimedia.setValue(false);
     }
 
     public SimpleExoPlayer get() {
@@ -85,6 +84,7 @@ public class PlayerHolder {
     }
 
     public void prepare(String videoUrl, String thumbUrl) {
+        Timber.e("prepare player %s", videoUrl);
         lastVideoUrl = videoUrl;
         lastThumbUrl = thumbUrl;
         setCanShowThumb(true);
@@ -100,7 +100,9 @@ public class PlayerHolder {
                 .setExtractorsFactory(new DefaultExtractorsFactory())
                 .createMediaSource(videoUri);
 
-        mainThreadHandler.post(() -> get().prepare(source));
+        mainThreadHandler.post(() -> {
+            get().prepare(source);
+        });
     }
 
     private void checkThumb(String thumbUrl) {
@@ -137,11 +139,11 @@ public class PlayerHolder {
 
     private void setCanShowVideo(boolean canShowVideo) {
         this.canShowVideo = canShowVideo;
-        canShowMultimedia.postValue(canShowVideo || canShowThumb);
+        canShowMultimedia.accept(canShowVideo || canShowThumb);
     }
 
     private void setCanShowThumb(boolean canShowThumb) {
         this.canShowThumb = canShowThumb;
-        canShowMultimedia.postValue(canShowVideo || canShowThumb);
+        canShowMultimedia.accept(canShowVideo || canShowThumb);
     }
 }

@@ -16,6 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/primaryTextColor"
         tools:text="Est azureus axona, cesaris. Cur amor velum?"
         />
 
@@ -26,6 +27,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/primaryTextColor"
         tools:text="6 TBLSP"
         />
 </LinearLayout>

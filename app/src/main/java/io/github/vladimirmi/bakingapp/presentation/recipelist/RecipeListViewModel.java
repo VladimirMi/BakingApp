@@ -1,6 +1,5 @@
 package io.github.vladimirmi.bakingapp.presentation.recipelist;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
 import java.util.List;
@@ -11,6 +10,8 @@ import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.widget.WidgetUpdateService;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Vladimir Mikhalev 08.03.2018.
@@ -19,23 +20,22 @@ import io.github.vladimirmi.bakingapp.widget.WidgetUpdateService;
 public class RecipeListViewModel extends ViewModel {
 
     private final RecipeRepository repository;
-    private LiveData<List<Recipe>> recipes;
 
     @Inject
-    public RecipeListViewModel(RecipeRepository repository) {
+    RecipeListViewModel(RecipeRepository repository) {
         this.repository = repository;
-        recipes = repository.getRecipes();
     }
 
-    LiveData<List<Recipe>> getRecipes() {
-        return recipes;
+    Single<List<Recipe>> getRecipes() {
+        return repository.getRecipes()
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public void selectRecipe(Recipe recipe) {
-        repository.selectRecipe(recipe);
+    void selectRecipe(int recipeId) {
+        repository.selectRecipe(recipeId).subscribe();
     }
 
-    public void saveRecipeForWidget(int widgetId, Recipe recipe) {
+    void saveRecipeForWidget(int widgetId, Recipe recipe) {
         repository.saveRecipeForWidget(widgetId, recipe);
         WidgetUpdateService.startUpdateWidget(Scopes.appContext(), widgetId);
     }

@@ -6,13 +6,13 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.widget.RemoteViews;
 
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.Recipe;
-import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
+import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 import io.github.vladimirmi.bakingapp.presentation.recipelist.RecipeListActivity;
-import timber.log.Timber;
 
 /**
  * Implementation of App Widget functionality.
@@ -22,10 +22,9 @@ public class BakingWidgetProvider extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId, Recipe recipe) {
 
-        Timber.e("updateAppWidget: widget %s - recipe %s", appWidgetId, recipe.getId());
-
         RemoteViews views = getWidgetView(context, appWidgetId, recipe);
         appWidgetManager.updateAppWidget(appWidgetId, views);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_ingredients_list);
     }
 
     @Override
@@ -47,26 +46,25 @@ public class BakingWidgetProvider extends AppWidgetProvider {
     }
 
     private static RemoteViews getWidgetView(Context context, int widgetId, Recipe recipe) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_widget);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
 
         views.setTextViewText(R.id.widget_recipe_name, recipe.getName());
         Intent chooseRecipeIntent = new Intent(context, RecipeListActivity.class);
         chooseRecipeIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
         PendingIntent chooseRecipePendingIntent = PendingIntent
-                .getActivity(context, 0, chooseRecipeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                .getActivity(context, widgetId, chooseRecipeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.widget_recipe_name, chooseRecipePendingIntent);
 
 
         Intent adapterIntent = new Intent(context, IngredientViewsService.class);
-        adapterIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+        adapterIntent.setData(Uri.parse(String.valueOf(widgetId)));
         views.setRemoteAdapter(R.id.widget_ingredients_list, adapterIntent);
 
-
-        Intent ingredientsIntent = new Intent(context, DetailActivity.class);
+        Intent ingredientsIntent = new Intent(context, MasterActivity.class);
         ingredientsIntent.putExtra(RecipeListActivity.EXTRA_RECIPE_ID, recipe.getId());
         PendingIntent ingredientsPendingIntent = TaskStackBuilder.create(context)
                 .addNextIntentWithParentStack(ingredientsIntent)
-                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                .getPendingIntent(widgetId, PendingIntent.FLAG_UPDATE_CURRENT);
 
         views.setPendingIntentTemplate(R.id.widget_ingredients_list, ingredientsPendingIntent);
 

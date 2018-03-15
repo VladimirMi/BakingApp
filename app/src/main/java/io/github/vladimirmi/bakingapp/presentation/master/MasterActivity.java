@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,9 +18,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.di.Scopes;
+import io.github.vladimirmi.bakingapp.presentation.BaseActivity;
 import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
 import io.github.vladimirmi.bakingapp.presentation.detail.ingredients.IngredientsFragment;
 import io.github.vladimirmi.bakingapp.presentation.detail.step.StepFragment;
+import io.github.vladimirmi.bakingapp.presentation.recipelist.RecipeListActivity;
+import io.github.vladimirmi.bakingapp.utils.LineDividerItemDecoration;
 import io.github.vladimirmi.bakingapp.utils.Utils;
 
 /**
@@ -32,7 +34,7 @@ import io.github.vladimirmi.bakingapp.utils.Utils;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class MasterActivity extends AppCompatActivity {
+public class MasterActivity extends BaseActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.steps_list) RecyclerView stepsList;
@@ -55,6 +57,15 @@ public class MasterActivity extends AppCompatActivity {
             setupPlayerView();
         }
 
+        // init state if come from widget
+        if (getIntent() != null && getIntent().hasExtra(RecipeListActivity.EXTRA_RECIPE_ID)) {
+            int recipeId = getIntent().getIntExtra(RecipeListActivity.EXTRA_RECIPE_ID, 0);
+            viewModel.selectRecipe(recipeId);
+            showIngredients();
+            setIntent(null);
+        }
+
+
         setupToolbar();
         setupIngredients();
         setupSteps();
@@ -73,7 +84,7 @@ public class MasterActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        toolbar.setTitle(viewModel.getSelectedRecipe().getName());
+        bindData(viewModel.getSelectedRecipe(), recipe -> toolbar.setTitle(recipe.getName()));
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -81,30 +92,26 @@ public class MasterActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
+
     private void setupPlayerView() {
         playerView = findViewById(R.id.playerView);
 
-        viewModel.isCanShowMultimedia().observe(this, can -> {
-            playerView.getOverlayFrameLayout().setVisibility(can ? View.GONE : View.VISIBLE);
-        });
+        bindData(viewModel.isCanShowMultimedia(), can -> playerView
+                .getOverlayFrameLayout().setVisibility(can ? View.GONE : View.VISIBLE));
 
         ImageView artView = playerView.findViewById(R.id.exo_artwork);
-        viewModel.getSelectedStep().observe(this, step -> Utils.setImage(artView, step.getThumbnailURL()));
-
-        Utils.setAspectRatio(playerView);
+        bindData(viewModel.getSelectedStep(), step -> Utils.setImage(artView, step.getThumbnailURL()));
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void setupIngredients() {
         ingredients.setOnClickListener(v -> showIngredients());
 
-        viewModel.getSelectedStepPosition().observe(this, position -> {
+        bindData(viewModel.getSelectedStepPosition(), position -> {
             if (twoPane && position == -1) {
                 ingredients.setBackgroundColor(Color.LTGRAY);
                 showIngredients();
             } else {
-                ingredients.setBackgroundColor(Color.WHITE);
+                ingredients.setBackgroundColor(Color.TRANSPARENT);
             }
         });
     }
@@ -114,11 +121,12 @@ public class MasterActivity extends AppCompatActivity {
         stepsList.setLayoutManager(new LinearLayoutManager(this));
         StepAdapter adapter = new StepAdapter(this::showStep);
         stepsList.setAdapter(adapter);
+        stepsList.addItemDecoration(new LineDividerItemDecoration(this));
 
-        adapter.setData(viewModel.getSteps());
+        bindData(viewModel.getSteps(), adapter::setData);
 
         if (twoPane) {
-            viewModel.getSelectedStepPosition().observe(this, adapter::selectItem);
+            bindData(viewModel.getSelectedStepPosition(), adapter::selectItem);
         }
     }
 
@@ -140,7 +148,8 @@ public class MasterActivity extends AppCompatActivity {
         viewModel.selectStepPosition(position);
         if (twoPane) {
             playerView.setVisibility(View.VISIBLE);
-            Fragment fragment = StepFragment.newInstance(viewModel.getSteps().get(position));
+            Utils.setAspectRatio(playerView);
+            Fragment fragment = StepFragment.newInstance(viewModel.getStep(position));
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.detail_container, fragment)
                     .commit();

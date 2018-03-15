@@ -1,6 +1,5 @@
 package io.github.vladimirmi.bakingapp.widget;
 
-import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.widget.RemoteViewsService;
 
@@ -12,7 +11,7 @@ public class IngredientViewsService extends RemoteViewsService {
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        int widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1);
+        int widgetId = Integer.valueOf(intent.getData().toString());
         return new IngredientViewsFactory(getApplicationContext(), widgetId);
     }
 }

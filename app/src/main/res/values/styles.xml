@@ -8,16 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/primaryTextColor</item>
         <item name="android:textColorSecondary">@color/secondaryTextColor</item>
-        <item name="titleTextColor">@color/colorAccentDark</item>
+        <item name="titleTextColor">@color/colorAccentLight</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="colorControlNormal">@color/colorAccentDark</item>
+        <item name="colorControlNormal">@color/colorAccentLight</item>
     </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
-
-    </style>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
     <style name="MasterItem" parent="Base.Widget.AppCompat.Button.Borderless">
         <item name="android:layout_width">match_parent</item>

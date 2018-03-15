@@ -1,9 +1,11 @@
 package io.github.vladimirmi.bakingapp.data.net;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
@@ -41,6 +43,7 @@ public class RestServiceProvider {
     private static Retrofit createRetrofit(OkHttpClient okHttp) {
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .addConverterFactory(createConvertFactory())
                 .client(okHttp)
                 .build();

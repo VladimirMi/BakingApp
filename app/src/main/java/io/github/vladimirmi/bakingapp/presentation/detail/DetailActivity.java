@@ -6,7 +6,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,10 +18,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.di.Scopes;
+import io.github.vladimirmi.bakingapp.presentation.BaseActivity;
 import io.github.vladimirmi.bakingapp.presentation.detail.ingredients.IngredientsFragment;
 import io.github.vladimirmi.bakingapp.presentation.detail.step.StepPagerAdapter;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
-import io.github.vladimirmi.bakingapp.presentation.recipelist.RecipeListActivity;
 import io.github.vladimirmi.bakingapp.utils.Utils;
 import timber.log.Timber;
 
@@ -32,7 +31,7 @@ import timber.log.Timber;
  * item details are presented side-by-side with a list of items
  * in a {@link MasterActivity}.
  */
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends BaseActivity {
 
     public static final int CONTROLLER_SHOW_TIMEOUT_MS = 3000;
 
@@ -46,7 +45,6 @@ public class DetailActivity extends AppCompatActivity {
     private boolean isLandscapeMode;
     private boolean isStep;
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,15 +53,8 @@ public class DetailActivity extends AppCompatActivity {
 
         viewModel = Scopes.getViewModel(this, DetailViewModel.class);
 
-        // init state if come from widget
-        if (getIntent() != null && getIntent().hasExtra(RecipeListActivity.EXTRA_RECIPE_ID)) {
-            int recipeId = getIntent().getIntExtra(RecipeListActivity.EXTRA_RECIPE_ID, 0);
-            viewModel.selectRecipe(recipeId);
-            setIntent(null);
-        }
-
+        isStep = viewModel.getSelectedStepPosition().blockingFirst() != -1;
         isLandscapeMode = getResources().getBoolean(R.bool.landscape);
-        isStep = viewModel.getSelectedStepPosition().getValue() != -1;
 
         if (isStep) {
             setupPlayerView();
@@ -89,7 +80,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        toolbar.setTitle(viewModel.getSelectedRecipe().getName());
+        bindData(viewModel.getSelectedRecipe(), recipe -> toolbar.setTitle(recipe.getName()));
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -97,7 +88,6 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void setupSteps() {
         ViewPager pager = (ViewPager) getLayoutInflater()
                 .inflate(R.layout.view_detail_steps, detailContainer, false);
@@ -106,10 +96,10 @@ public class DetailActivity extends AppCompatActivity {
         StepPagerAdapter adapter = new StepPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
 
-        adapter.setData(viewModel.getSteps());
+        bindData(viewModel.getSteps(), adapter::setData);
         tabs.setupWithViewPager(pager);
 
-        viewModel.getSelectedStepPosition().observe(this, pager::setCurrentItem);
+        bindData(viewModel.getSelectedStepPosition(), pager::setCurrentItem);
 
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 
@@ -122,15 +112,13 @@ public class DetailActivity extends AppCompatActivity {
 
     private int lastSystemUIVisibility;
 
-    @SuppressWarnings("ConstantConditions")
     private void setupPlayerView() {
 
-        viewModel.isCanShowMultimedia().observe(this, can -> {
-            playerView.getOverlayFrameLayout().setVisibility(can ? View.GONE : View.VISIBLE);
-        });
+        bindData(viewModel.isCanShowMultimedia(), can -> playerView
+                .getOverlayFrameLayout().setVisibility(can ? View.GONE : View.VISIBLE));
 
         ImageView artView = playerView.findViewById(R.id.exo_artwork);
-        viewModel.getSelectedStep().observe(this, step -> Utils.setImage(artView, step.getThumbnailURL()));
+        bindData(viewModel.getSelectedStep(), step -> Utils.setImage(artView, step.getThumbnailURL()));
 
         Utils.setAspectRatio(playerView);
 

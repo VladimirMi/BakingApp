@@ -1,10 +1,6 @@
 package io.github.vladimirmi.bakingapp.presentation.detail;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
-import android.support.annotation.Nullable;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -17,6 +13,8 @@ import io.github.vladimirmi.bakingapp.data.PlayerHolder;
 import io.github.vladimirmi.bakingapp.data.Recipe;
 import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.data.Step;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Vladimir Mikhalev 09.03.2018.
@@ -40,38 +38,28 @@ class DetailViewModel extends ViewModel {
         player.release();
     }
 
-    LiveData<Integer> getSelectedStepPosition() {
+    Observable<Integer> getSelectedStepPosition() {
         return repository.getSelectedStepPosition();
     }
 
-    LiveData<Step> getSelectedStep() {
-        return Transformations.map(getSelectedStepPosition(), position -> getSteps().get(position));
+    Observable<Step> getSelectedStep() {
+        return repository.getSelectedStep();
     }
 
-    List<Step> getSteps() {
-        return repository.getSelectedRecipe().getSteps();
+    Observable<List<Step>> getSteps() {
+        return repository.getSelectedRecipe().map(Recipe::getSteps);
     }
 
     void selectStepPosition(int position) {
         repository.selectStepPosition(position);
     }
 
-    void selectRecipe(int recipeId) {
-        LiveData<Recipe> data = repository.getRecipe(recipeId);
-        data.observeForever(new Observer<Recipe>() {
-            @Override
-            public void onChanged(@Nullable Recipe recipe) {
-                repository.selectRecipe(recipe);
-                data.removeObserver(this);
-            }
-        });
+    Observable<Recipe> getSelectedRecipe() {
+        return repository.getSelectedRecipe()
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
-    Recipe getSelectedRecipe() {
-        return repository.getSelectedRecipe();
-    }
-
-    LiveData<Boolean> isCanShowMultimedia() {
+    Observable<Boolean> isCanShowMultimedia() {
         return repository.isCanShowMultimedia();
     }
 

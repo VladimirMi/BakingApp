@@ -83,7 +83,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepVH> {
         }
 
         void select(boolean selected) {
-            itemView.setBackgroundColor(selected ? Color.LTGRAY : Color.WHITE);
+            itemView.setBackgroundColor(selected ? Color.LTGRAY : Color.TRANSPARENT);
         }
     }
 
