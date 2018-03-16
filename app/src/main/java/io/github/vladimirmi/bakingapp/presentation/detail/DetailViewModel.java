@@ -63,14 +63,14 @@ class DetailViewModel extends ViewModel {
 
     Player getPlayer() {
         SimpleExoPlayer simpleExoPlayer = player.get();
-//        simpleExoPlayer.seekTo(currentPosition);
-//        simpleExoPlayer.setPlayWhenReady(isPlayed);
+        simpleExoPlayer.seekTo(currentPosition);
+        simpleExoPlayer.setPlayWhenReady(isPlayed);
         return simpleExoPlayer;
     }
 
     void releasePlayer() {
-//        currentPosition = player.get().getCurrentPosition();
-//        isPlayed = player.get().getPlayWhenReady();
-//        player.release();
+        currentPosition = player.get().getCurrentPosition();
+        isPlayed = player.get().getPlayWhenReady();
+        player.release();
     }
 }
