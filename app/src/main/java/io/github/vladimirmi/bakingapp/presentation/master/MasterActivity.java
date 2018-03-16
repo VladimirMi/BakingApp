@@ -3,6 +3,7 @@ package io.github.vladimirmi.bakingapp.presentation.master;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +19,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
+import io.github.vladimirmi.bakingapp.data.entity.Step;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.BaseActivity;
 import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
@@ -136,11 +138,13 @@ public class MasterActivity extends BaseActivity {
     private void setupSteps() {
         stepsList.setFocusable(false);
         stepsList.setLayoutManager(new LinearLayoutManager(this));
-        StepAdapter adapter = new StepAdapter(this::showStep);
+        StepAdapter adapter = new StepAdapter(viewModel::selectStepPosition);
         stepsList.setAdapter(adapter);
         stepsList.addItemDecoration(new LineDividerItemDecoration(this));
 
         bindData(viewModel.getSteps(), adapter::setData);
+
+        bindData(viewModel.getSelectedStep(), this::showStep);
 
         if (twoPane) {
             bindData(viewModel.getSelectedStepPosition(), adapter::selectItem);
@@ -148,7 +152,6 @@ public class MasterActivity extends BaseActivity {
     }
 
     private void showIngredients() {
-        viewModel.selectStepPosition(-1);
         if (twoPane) {
             playerView.setVisibility(View.GONE);
             Fragment fragment = new IngredientsFragment();
@@ -161,12 +164,11 @@ public class MasterActivity extends BaseActivity {
         }
     }
 
-    private void showStep(int position) {
-        viewModel.selectStepPosition(position);
+    private void showStep(Step step) {
         if (twoPane) {
             playerView.setVisibility(View.VISIBLE);
             Utils.setAspectRatio(playerView);
-            Fragment fragment = StepFragment.newInstance(viewModel.getSelectedStep().blockingFirst());
+            Fragment fragment = StepFragment.newInstance(step);
             getSupportFragmentManager().beginTransaction()
                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                     .replace(R.id.detail_container, fragment)
@@ -180,5 +182,10 @@ public class MasterActivity extends BaseActivity {
         Intent intent = new Intent(this, DetailActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
+    @VisibleForTesting
+    public boolean isTwoPane() {
+        return twoPane;
     }
 }

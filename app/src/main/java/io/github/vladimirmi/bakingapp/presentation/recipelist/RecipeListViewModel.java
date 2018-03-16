@@ -11,7 +11,6 @@ import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.widget.WidgetUpdateService;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Vladimir Mikhalev 08.03.2018.
@@ -21,14 +20,14 @@ public class RecipeListViewModel extends ViewModel {
 
     private final RecipeRepository repository;
 
+
     @Inject
     RecipeListViewModel(RecipeRepository repository) {
         this.repository = repository;
     }
 
     Single<List<Recipe>> getRecipes() {
-        return repository.getRecipes()
-                .observeOn(AndroidSchedulers.mainThread());
+        return repository.getRecipes();
     }
 
     void selectRecipe(int recipeId) {

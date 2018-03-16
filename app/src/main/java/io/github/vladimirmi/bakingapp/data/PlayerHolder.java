@@ -91,8 +91,8 @@ public class PlayerHolder {
         setCanShowVideo(true);
         checkThumb(thumbUrl);
 
-//        Uri videoUri = Uri.parse("http://techslides.com/demos/sample-videos/small.mp4");
-        Uri videoUri = Uri.parse(videoUrl);
+        Uri videoUri = Uri.parse("http://techslides.com/demos/sample-videos/small.mp4");
+//        Uri videoUri = Uri.parse(videoUrl);
 
         String appName = context.getString(R.string.app_name);
         DataSource.Factory factory = new DefaultHttpDataSourceFactory(Util.getUserAgent(context, appName));

@@ -14,7 +14,6 @@ import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 import io.github.vladimirmi.bakingapp.data.entity.Step;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Vladimir Mikhalev 09.03.2018.
@@ -39,8 +38,7 @@ class MasterViewModel extends ViewModel {
     }
 
     Observable<List<Step>> getSteps() {
-        return repository.getSelectedRecipe().map(Recipe::getSteps)
-                .observeOn(AndroidSchedulers.mainThread());
+        return repository.getSelectedRecipe().map(Recipe::getSteps);
     }
 
     void selectStepPosition(int position) {
@@ -48,23 +46,19 @@ class MasterViewModel extends ViewModel {
     }
 
     Observable<Integer> getSelectedStepPosition() {
-        return repository.getSelectedStepPosition()
-                .observeOn(AndroidSchedulers.mainThread());
+        return repository.getSelectedStepPosition();
     }
 
     Observable<Step> getSelectedStep() {
-        return repository.getSelectedStep()
-                .observeOn(AndroidSchedulers.mainThread());
+        return repository.getSelectedStep();
     }
 
     Observable<Recipe> getSelectedRecipe() {
-        return repository.getSelectedRecipe()
-                .observeOn(AndroidSchedulers.mainThread());
+        return repository.getSelectedRecipe();
     }
 
     Observable<Boolean> isCanShowMultimedia() {
-        return repository.isCanShowMultimedia()
-                .observeOn(AndroidSchedulers.mainThread());
+        return repository.isCanShowMultimedia();
     }
 
     void selectRecipe(int recipeId) {
@@ -73,14 +67,14 @@ class MasterViewModel extends ViewModel {
 
     Player getPlayer() {
         SimpleExoPlayer simpleExoPlayer = player.get();
-        simpleExoPlayer.seekTo(currentPosition);
-        simpleExoPlayer.setPlayWhenReady(isPlayed);
+//        simpleExoPlayer.seekTo(currentPosition);
+//        simpleExoPlayer.setPlayWhenReady(isPlayed);
         return simpleExoPlayer;
     }
 
     void releasePlayer() {
-        currentPosition = player.get().getCurrentPosition();
-        isPlayed = player.get().getPlayWhenReady();
-        player.release();
+//        currentPosition = player.get().getCurrentPosition();
+//        isPlayed = player.get().getPlayWhenReady();
+//        player.release();
     }
 }

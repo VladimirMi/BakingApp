@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 import io.github.vladimirmi.bakingapp.data.entity.Step;
+import io.github.vladimirmi.bakingapp.data.idlingresource.IdlingResources;
 import io.github.vladimirmi.bakingapp.data.net.RestService;
 import io.github.vladimirmi.bakingapp.data.preferences.Preferences;
 import io.reactivex.Completable;
@@ -24,25 +25,31 @@ public class RecipeRepository {
     private final PlayerHolder player;
     private final RestService rest;
     private final Preferences prefs;
+    private final IdlingResources idlingResources;
 
     private final BehaviorRelay<List<Recipe>> recipes = BehaviorRelay.create();
     private final BehaviorRelay<Recipe> selectedRecipe = BehaviorRelay.create();
     private final BehaviorRelay<Integer> selectedStepPosition = BehaviorRelay.create();
 
     @Inject
-    public RecipeRepository(RestService restService, PlayerHolder player, Preferences preferences) {
+    public RecipeRepository(RestService restService, PlayerHolder player, Preferences preferences,
+                            IdlingResources idlingResources) {
         this.rest = restService;
         this.player = player;
         prefs = preferences;
+        this.idlingResources = idlingResources;
     }
 
     public Single<List<Recipe>> getRecipes() {
+        idlingResources.setIdleState(false);
+
+        Single<List<Recipe>> single;
         if (recipes.hasValue()) {
-            return recipes.firstOrError();
+            single = recipes.firstOrError();
         } else {
-            return rest.getRecipes()
-                    .doOnSuccess(res -> recipes.accept(res));
+            single = rest.getRecipes().doOnSuccess(recipes);
         }
+        return single.doOnSuccess(r -> idlingResources.setIdleState(true));
     }
 
     public Completable selectRecipe(int recipeId) {
@@ -63,7 +70,7 @@ public class RecipeRepository {
         if (!selectedStepPosition.hasValue() || selectedStepPosition.getValue() != position) {
             selectedStepPosition.accept(position);
             if (position != -1) {
-                Step step = getSelectedStep().blockingFirst();
+                Step step = selectedRecipe.getValue().getSteps().get(position);
                 player.prepare(step.getVideoURL(), step.getThumbnailURL());
             }
         }
@@ -95,6 +102,10 @@ public class RecipeRepository {
 
     public Observable<Boolean> isCanShowMultimedia() {
         return player.canShowMultimedia;
+    }
+
+    public IdlingResources.SimpleIdleResource getIdlingResource() {
+        return idlingResources.getResource();
     }
 
     private Recipe findRecipe(List<Recipe> recipes, int id) {
