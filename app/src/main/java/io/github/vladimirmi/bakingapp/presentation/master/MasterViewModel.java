@@ -59,6 +59,10 @@ class MasterViewModel extends ViewModel {
         return repository.getPlayerStatus();
     }
 
+    BehaviorRelay<PlayerHolder.PlaybackStatus> getPlaybackStatus() {
+        return repository.getPlaybackStatus();
+    }
+
     void selectRecipe(int recipeId) {
         repository.selectRecipe(recipeId).subscribe();
     }

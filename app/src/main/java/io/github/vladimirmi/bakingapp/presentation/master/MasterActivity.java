@@ -3,9 +3,7 @@ package io.github.vladimirmi.bakingapp.presentation.master;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,8 +44,8 @@ public class MasterActivity extends BaseActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.steps_list) RecyclerView stepsList;
     @BindView(R.id.ingredients) TextView ingredients;
-    @Nullable @BindView(R.id.player_view) PlayerView playerView;
-    @Nullable @BindView(R.id.player_thumb) ImageView playerThumb;
+    PlayerView playerView;
+    ImageView playerThumb;
 
     private boolean twoPane;
     private MasterViewModel viewModel;
@@ -117,6 +115,9 @@ public class MasterActivity extends BaseActivity {
 
 
     private void setupPlayerView() {
+        playerView = findViewById(R.id.player_view);
+        playerThumb = findViewById(R.id.player_thumb);
+
         bindData(viewModel.getPlayerStatus(), status -> {
             playerThumb.setVisibility(status == PlayerHolder.PlayerStatus.NORMAL ? View.GONE : View.VISIBLE);
             switch (status) {
@@ -125,6 +126,17 @@ public class MasterActivity extends BaseActivity {
                     break;
                 case UNEXPECTED_ERROR:
                     showSnack(R.string.unexpected_error);
+                    break;
+            }
+        });
+
+        bindData(viewModel.getPlaybackStatus(), status -> {
+            switch (status) {
+                case PLAYED:
+                    keepScreenOn(true);
+                    break;
+                case STOPPED:
+                    keepScreenOn(false);
                     break;
             }
         });
@@ -197,9 +209,5 @@ public class MasterActivity extends BaseActivity {
     @VisibleForTesting
     public boolean isTwoPane() {
         return twoPane;
-    }
-
-    private void showSnack(int stringRes) {
-        Snackbar.make(toolbar, stringRes, Snackbar.LENGTH_SHORT).show();
     }
 }

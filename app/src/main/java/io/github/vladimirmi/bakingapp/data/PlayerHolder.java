@@ -33,6 +33,7 @@ public class PlayerHolder {
     private SimpleExoPlayer player;
     private final Context context;
     final BehaviorRelay<PlayerStatus> playerStatus = BehaviorRelay.create();
+    final BehaviorRelay<PlaybackStatus> playbackStatus = BehaviorRelay.create();
 
     @Inject
     public PlayerHolder(Context context) {
@@ -50,7 +51,15 @@ public class PlayerHolder {
                 public void onPlayerError(ExoPlaybackException error) {
                     Timber.e(error);
                     playerStatus.accept(PlayerStatus.values()[error.type]);
-                    player.stop();
+                }
+
+                @Override
+                public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                    if (playbackState == Player.STATE_READY && playWhenReady) {
+                        playbackStatus.accept(PlaybackStatus.PLAYED);
+                    } else {
+                        playbackStatus.accept(PlaybackStatus.STOPPED);
+                    }
                 }
             });
         }
@@ -67,13 +76,15 @@ public class PlayerHolder {
     }
 
     public void prepare(String videoUrl) {
+//        videoUrl = "http://techslides.com/demos/sample-videos/small.mp4";
+//        videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
+
         if (videoUrl.isEmpty()) {
             playerStatus.accept(PlayerStatus.SOURCE_ERROR);
             return;
         }
         playerStatus.accept(PlayerStatus.NORMAL);
 
-//        Uri videoUri = Uri.parse("http://techslides.com/demos/sample-videos/small.mp4");
         Uri videoUri = Uri.parse(videoUrl);
 
         String appName = context.getString(R.string.app_name);
@@ -87,4 +98,6 @@ public class PlayerHolder {
     }
 
     public enum PlayerStatus {SOURCE_ERROR, RENDERER_ERROR, UNEXPECTED_ERROR, NORMAL}
+
+    public enum PlaybackStatus {PLAYED, STOPPED}
 }

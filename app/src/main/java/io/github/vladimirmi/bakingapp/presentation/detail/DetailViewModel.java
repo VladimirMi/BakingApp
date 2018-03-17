@@ -59,6 +59,10 @@ class DetailViewModel extends ViewModel {
         return repository.getPlayerStatus();
     }
 
+    BehaviorRelay<PlayerHolder.PlaybackStatus> getPlaybackStatus() {
+        return repository.getPlaybackStatus();
+    }
+
     SimpleExoPlayer getPlayer() {
         return player.get();
     }

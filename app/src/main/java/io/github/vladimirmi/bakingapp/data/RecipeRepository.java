@@ -104,6 +104,10 @@ public class RecipeRepository {
         return player.playerStatus;
     }
 
+    public BehaviorRelay<PlayerHolder.PlaybackStatus> getPlaybackStatus() {
+        return player.playbackStatus;
+    }
+
     public IdlingResources.SimpleIdleResource getIdlingResource() {
         return idlingResources.getResource();
     }

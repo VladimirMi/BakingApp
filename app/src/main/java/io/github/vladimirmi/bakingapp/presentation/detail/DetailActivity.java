@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -38,8 +37,8 @@ public class DetailActivity extends BaseActivity {
 
     public static final int CONTROLLER_SHOW_TIMEOUT_MS = 3000;
 
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.appbar) AppBarLayout appbar;
+    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+    @Nullable @BindView(R.id.appbar) AppBarLayout appbar;
     @Nullable @BindView(R.id.detail_container) FrameLayout detailContainer;
     @Nullable @BindView(R.id.tabs) TabLayout tabs;
     @BindView(R.id.player_view) PlayerView playerView;
@@ -102,7 +101,11 @@ public class DetailActivity extends BaseActivity {
     }
 
     private void setupToolbar() {
-        bindData(viewModel.getSelectedRecipe(), recipe -> toolbar.setTitle(recipe.getName()));
+        bindData(viewModel.getSelectedRecipe(), recipe -> {
+            if (toolbar != null) {
+                toolbar.setTitle(recipe.getName());
+            }
+        });
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -110,6 +113,7 @@ public class DetailActivity extends BaseActivity {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void setupSteps() {
         ViewPager pager = (ViewPager) getLayoutInflater()
                 .inflate(R.layout.view_detail_steps, detailContainer, false);
@@ -147,6 +151,17 @@ public class DetailActivity extends BaseActivity {
             }
         });
 
+        bindData(viewModel.getPlaybackStatus(), status -> {
+            switch (status) {
+                case PLAYED:
+                    keepScreenOn(true);
+                    break;
+                case STOPPED:
+                    keepScreenOn(false);
+                    break;
+            }
+        });
+
         bindData(viewModel.getSelectedStep(), step -> Utils.setImage(playerThumb, step.getThumbnailURL()));
 
         Utils.setAspectRatio(playerView);
@@ -168,7 +183,9 @@ public class DetailActivity extends BaseActivity {
     }
 
     private void setupIngredients() {
-        tabs.setVisibility(View.GONE);
+        if (tabs != null) {
+            tabs.setVisibility(View.GONE);
+        }
         playerView.setVisibility(View.GONE);
 
         getSupportFragmentManager().beginTransaction()
@@ -177,27 +194,11 @@ public class DetailActivity extends BaseActivity {
                 .commit();
     }
 
-    protected void enterFullScreen() {
-        int visibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-
-        getWindow().getDecorView().setSystemUiVisibility(visibility);
-
-        appbar.setVisibility(View.GONE);
-    }
-
     private final Handler leanBackHandler = new Handler();
     private final Runnable enterLeanback = this::enterFullScreen;
 
     private void resetHideTimer() {
         leanBackHandler.removeCallbacks(enterLeanback);
         leanBackHandler.postDelayed(enterLeanback, CONTROLLER_SHOW_TIMEOUT_MS);
-    }
-
-    private void showSnack(int stringRes) {
-        Snackbar.make(appbar, stringRes, Snackbar.LENGTH_SHORT).show();
     }
 }
