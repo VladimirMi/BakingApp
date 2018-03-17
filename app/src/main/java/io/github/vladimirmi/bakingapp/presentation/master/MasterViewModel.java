@@ -43,6 +43,10 @@ class MasterViewModel extends ViewModel {
         repository.selectStepPosition(position);
     }
 
+    void selectIngredients() {
+        selectStepPosition(-1);
+    }
+
     Observable<Integer> getSelectedStepPosition() {
         return repository.getSelectedStepPosition();
     }

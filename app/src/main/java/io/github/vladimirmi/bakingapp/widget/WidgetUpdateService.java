@@ -1,9 +1,11 @@
 package io.github.vladimirmi.bakingapp.widget;
 
+import android.app.Notification;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -22,13 +24,19 @@ public class WidgetUpdateService extends Service {
     public static void startUpdateWidget(Context context, int widgetId) {
         Intent intent = new Intent(context, WidgetUpdateService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
-        context.startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         repository = Scopes.appScope().getInstance(RecipeRepository.class);
+        startForeground(1, new Notification());
     }
 
     @Override

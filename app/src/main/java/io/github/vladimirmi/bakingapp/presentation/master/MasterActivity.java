@@ -47,7 +47,7 @@ public class MasterActivity extends BaseActivity {
     PlayerView playerView;
     ImageView playerThumb;
 
-    private boolean twoPane;
+    private boolean twoPane = false;
     private MasterViewModel viewModel;
 
     @Override
@@ -60,6 +60,7 @@ public class MasterActivity extends BaseActivity {
 
         if (findViewById(R.id.detail_container) != null) {
             twoPane = true;
+            viewModel.selectIngredients();
             setupPlayerView();
         }
 
@@ -67,7 +68,7 @@ public class MasterActivity extends BaseActivity {
         if (getIntent() != null && getIntent().hasExtra(RecipeListActivity.EXTRA_RECIPE_ID)) {
             int recipeId = getIntent().getIntExtra(RecipeListActivity.EXTRA_RECIPE_ID, 0);
             viewModel.selectRecipe(recipeId);
-            showIngredients();
+            viewModel.selectIngredients();
             setIntent(null);
         }
 
@@ -145,15 +146,15 @@ public class MasterActivity extends BaseActivity {
     }
 
     private void setupIngredients() {
-        ingredients.setOnClickListener(v -> showIngredients());
+        ingredients.setOnClickListener(v -> viewModel.selectIngredients());
 
         bindData(viewModel.getSelectedStepPosition(), position -> {
             if (twoPane && position == -1) {
                 ingredients.setBackgroundColor(Color.LTGRAY);
-                showIngredients();
             } else {
                 ingredients.setBackgroundColor(Color.TRANSPARENT);
             }
+            if (position == -1) showIngredients();
         });
     }
 
@@ -176,9 +177,9 @@ public class MasterActivity extends BaseActivity {
     private void showIngredients() {
         if (twoPane) {
             playerView.setVisibility(View.GONE);
+            playerThumb.setVisibility(View.GONE);
             Fragment fragment = new IngredientsFragment();
             getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                     .replace(R.id.detail_container, fragment)
                     .commit();
         } else {
@@ -189,10 +190,10 @@ public class MasterActivity extends BaseActivity {
     private void showStep(Step step) {
         if (twoPane) {
             playerView.setVisibility(View.VISIBLE);
+            playerThumb.setVisibility(View.VISIBLE);
             Utils.setAspectRatio(playerView);
             Fragment fragment = StepFragment.newInstance(step);
             getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                     .replace(R.id.detail_container, fragment)
                     .commit();
         } else {

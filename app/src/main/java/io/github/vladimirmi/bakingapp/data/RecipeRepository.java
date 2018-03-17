@@ -55,10 +55,7 @@ public class RecipeRepository {
     public Completable selectRecipe(int recipeId) {
         return getRecipes().flatMapObservable(Observable::fromIterable)
                 .filter(recipe -> recipe.getId() == recipeId)
-                .doOnNext(recipe -> {
-                    selectedRecipe.accept(recipe);
-                    selectStepPosition(-1);
-                })
+                .doOnNext(selectedRecipe)
                 .ignoreElements();
     }
 
