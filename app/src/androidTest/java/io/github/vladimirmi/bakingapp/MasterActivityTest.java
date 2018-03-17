@@ -57,7 +57,7 @@ public class MasterActivityTest {
         if (!twoPane) return;
         //Ingredients should be displayed by default
         onView(withId(R.id.ingredients_list)).check(matches(isDisplayed()));
-        onView(withId(R.id.playerView)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.player_view)).check(matches(not(isDisplayed())));
         onView(withId(R.id.step_title)).check(doesNotExist());
         onView(withId(R.id.step_description)).check(doesNotExist());
 
@@ -69,7 +69,7 @@ public class MasterActivityTest {
                 RecyclerViewActions.actionOnItemAtPosition(0, click())
         );
 
-        onView(withId(R.id.playerView)).check(matches(isDisplayed()));
+        onView(withId(R.id.player_view)).check(matches(isDisplayed()));
         onView(withId(R.id.step_title)).check(matches(isDisplayed()));
         onView(withId(R.id.step_description)).check(matches(isDisplayed()));
         onView(withId(R.id.ingredients_list)).check(doesNotExist());
@@ -94,7 +94,7 @@ public class MasterActivityTest {
         );
 
         intended(hasComponent(DetailActivity.class.getName()), times(2));
-        onView(withId(R.id.playerView)).check(matches(isDisplayed()));
+        onView(withId(R.id.player_view)).check(matches(isDisplayed()));
         onView(withId(R.id.steps_pager)).check(matches(isDisplayed()));
 
         Espresso.pressBack();
@@ -110,7 +110,7 @@ public class MasterActivityTest {
         Utils.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         intended(hasComponent(DetailActivity.class.getName()), times(3));
-        onView(withId(R.id.playerView)).check(matches(isDisplayed()));
+        onView(withId(R.id.player_view)).check(matches(isDisplayed()));
         onView(withId(R.id.steps_pager)).check(doesNotExist());
     }
 }

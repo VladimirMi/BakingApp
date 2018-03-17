@@ -8,7 +8,8 @@
     <string name="choose_recipe">Choose recipe for widget</string>
 
     <string name="recipe_preview">Recipe preview</string>
-    <string name="video_tumbnail">Video tumbnail</string>
+    <string name="video_thumbnail">Video thumbnail</string>
+    <string name="unexpected_error">Unexpected error</string>
 
     <plurals name="recipe_serving">
         <item quantity="one">%d serving</item>

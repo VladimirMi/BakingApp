@@ -2,9 +2,6 @@ package io.github.vladimirmi.bakingapp.data;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.NonNull;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -19,19 +16,11 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.jakewharton.rxrelay2.BehaviorRelay;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.di.Scopes;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import timber.log.Timber;
 
 /**
@@ -43,12 +32,7 @@ public class PlayerHolder {
 
     private SimpleExoPlayer player;
     private final Context context;
-    private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
-    private boolean canShowVideo;
-    private boolean canShowThumb;
-    private String lastVideoUrl;
-    private String lastThumbUrl;
-    final BehaviorRelay<Boolean> canShowMultimedia = BehaviorRelay.createDefault(false);
+    final BehaviorRelay<PlayerStatus> playerStatus = BehaviorRelay.create();
 
     @Inject
     public PlayerHolder(Context context) {
@@ -65,12 +49,10 @@ public class PlayerHolder {
                 @Override
                 public void onPlayerError(ExoPlaybackException error) {
                     Timber.e(error);
-                    setCanShowVideo(false);
+                    playerStatus.accept(PlayerStatus.values()[error.type]);
+                    player.stop();
                 }
             });
-            if (lastVideoUrl != null && lastThumbUrl != null) {
-                prepare(lastVideoUrl, lastThumbUrl);
-            }
         }
         return player;
     }
@@ -84,15 +66,15 @@ public class PlayerHolder {
         }
     }
 
-    public void prepare(String videoUrl, String thumbUrl) {
-        lastVideoUrl = videoUrl;
-        lastThumbUrl = thumbUrl;
-        setCanShowThumb(true);
-        setCanShowVideo(true);
-        checkThumb(thumbUrl);
+    public void prepare(String videoUrl) {
+        if (videoUrl.isEmpty()) {
+            playerStatus.accept(PlayerStatus.SOURCE_ERROR);
+            return;
+        }
+        playerStatus.accept(PlayerStatus.NORMAL);
 
-        Uri videoUri = Uri.parse("http://techslides.com/demos/sample-videos/small.mp4");
-//        Uri videoUri = Uri.parse(videoUrl);
+//        Uri videoUri = Uri.parse("http://techslides.com/demos/sample-videos/small.mp4");
+        Uri videoUri = Uri.parse(videoUrl);
 
         String appName = context.getString(R.string.app_name);
         DataSource.Factory factory = new DefaultHttpDataSourceFactory(Util.getUserAgent(context, appName));
@@ -101,48 +83,8 @@ public class PlayerHolder {
                 .setExtractorsFactory(new DefaultExtractorsFactory())
                 .createMediaSource(videoUri);
 
-        mainThreadHandler.post(() -> get().prepare(source));
+        get().prepare(source);
     }
 
-    private void checkThumb(String thumbUrl) {
-        OkHttpClient client = Scopes.appScope().getInstance(OkHttpClient.class);
-        try {
-            final Request req = new Request.Builder().url(thumbUrl).get().build();
-            client.newCall(req).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    Timber.e(e);
-                    setCanShowThumb(false);
-                }
-
-                @SuppressWarnings("ConstantConditions")
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    if (response.body() != null) {
-                        MediaType mediaType = response.body().contentType();
-                        if (mediaType.type().equals("image")) {
-                            setCanShowThumb(true);
-                            return;
-                        } else if (mediaType.type().equals("video")) {
-                            prepare(thumbUrl, "");
-                        }
-                        response.body().close();
-                    }
-                    setCanShowThumb(false);
-                }
-            });
-        } catch (RuntimeException e) {
-            setCanShowThumb(false);
-        }
-    }
-
-    private void setCanShowVideo(boolean canShowVideo) {
-        this.canShowVideo = canShowVideo;
-        canShowMultimedia.accept(canShowVideo || canShowThumb);
-    }
-
-    private void setCanShowThumb(boolean canShowThumb) {
-        this.canShowThumb = canShowThumb;
-        canShowMultimedia.accept(canShowVideo || canShowThumb);
-    }
+    public enum PlayerStatus {SOURCE_ERROR, RENDERER_ERROR, UNEXPECTED_ERROR, NORMAL}
 }

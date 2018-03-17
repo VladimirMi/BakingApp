@@ -32,9 +32,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@string/steps"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
+                android:text="@string/steps"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 />
 
@@ -56,11 +56,26 @@
         android:orientation="vertical"
         >
 
-        <com.google.android.exoplayer2.ui.PlayerView
-            android:id="@+id/playerView"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            />
+            android:layout_height="wrap_content"
+            >
+
+            <com.google.android.exoplayer2.ui.PlayerView
+                android:id="@+id/player_view"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                />
+
+            <ImageView
+                android:id="@+id/player_thumb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/video_thumbnail"
+                android:scaleType="centerInside"
+                android:background="@android:color/black"
+                />
+        </FrameLayout>
 
         <FrameLayout
             android:id="@id/detail_container"

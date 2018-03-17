@@ -71,7 +71,7 @@ public class RecipeRepository {
             selectedStepPosition.accept(position);
             if (position != -1) {
                 Step step = selectedRecipe.getValue().getSteps().get(position);
-                player.prepare(step.getVideoURL(), step.getThumbnailURL());
+                player.prepare(step.getVideoURL());
             }
         }
     }
@@ -100,8 +100,8 @@ public class RecipeRepository {
         prefs.saveRecipeId(widgetId, recipe.getId());
     }
 
-    public Observable<Boolean> isCanShowMultimedia() {
-        return player.canShowMultimedia;
+    public BehaviorRelay<PlayerHolder.PlayerStatus> getPlayerStatus() {
+        return player.playerStatus;
     }
 
     public IdlingResources.SimpleIdleResource getIdlingResource() {

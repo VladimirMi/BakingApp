@@ -2,7 +2,9 @@ package io.github.vladimirmi.bakingapp.presentation.detail;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -17,13 +19,13 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
+import io.github.vladimirmi.bakingapp.data.PlayerHolder;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.BaseActivity;
 import io.github.vladimirmi.bakingapp.presentation.detail.ingredients.IngredientsFragment;
 import io.github.vladimirmi.bakingapp.presentation.detail.step.StepPagerAdapter;
 import io.github.vladimirmi.bakingapp.presentation.master.MasterActivity;
 import io.github.vladimirmi.bakingapp.utils.Utils;
-import timber.log.Timber;
 
 /**
  * An activity representing a single Recipe entity detail screen. This
@@ -38,9 +40,11 @@ public class DetailActivity extends BaseActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.appbar) AppBarLayout appbar;
-    @BindView(R.id.detail_container) FrameLayout detailContainer;
-    @BindView(R.id.tabs) TabLayout tabs;
-    @BindView(R.id.playerView) PlayerView playerView;
+    @Nullable @BindView(R.id.detail_container) FrameLayout detailContainer;
+    @Nullable @BindView(R.id.tabs) TabLayout tabs;
+    @BindView(R.id.player_view) PlayerView playerView;
+    @BindView(R.id.player_thumb) ImageView playerThumb;
+
 
     private DetailViewModel viewModel;
     private boolean isLandscapeMode;
@@ -72,11 +76,12 @@ public class DetailActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (isStep) playerView.setPlayer(viewModel.getPlayer());
+
     }
 
     @Override
     protected void onPause() {
-        if (isStep) viewModel.releasePlayer();
+        if (isStep) playerView.setPlayer(null);
         super.onPause();
     }
 
@@ -130,12 +135,19 @@ public class DetailActivity extends BaseActivity {
     private int lastSystemUIVisibility;
 
     private void setupPlayerView() {
+        bindData(viewModel.getPlayerStatus(), status -> {
+            playerThumb.setVisibility(status == PlayerHolder.PlayerStatus.NORMAL ? View.GONE : View.VISIBLE);
+            switch (status) {
+                case SOURCE_ERROR:
+                    showSnack(R.string.video_not_available);
+                    break;
+                case UNEXPECTED_ERROR:
+                    showSnack(R.string.unexpected_error);
+                    break;
+            }
+        });
 
-        bindData(viewModel.isCanShowMultimedia(), can -> playerView
-                .getOverlayFrameLayout().setVisibility(can ? View.GONE : View.VISIBLE));
-
-        ImageView artView = playerView.findViewById(R.id.exo_artwork);
-        bindData(viewModel.getSelectedStep(), step -> Utils.setImage(artView, step.getThumbnailURL()));
+        bindData(viewModel.getSelectedStep(), step -> Utils.setImage(playerThumb, step.getThumbnailURL()));
 
         Utils.setAspectRatio(playerView);
 
@@ -153,10 +165,6 @@ public class DetailActivity extends BaseActivity {
             }
             lastSystemUIVisibility = visibility;
         });
-//        playerView.setOnTouchListener((v, event) -> {
-//            resetHideTimer();
-//            return false;
-//        });
     }
 
     private void setupIngredients() {
@@ -178,7 +186,6 @@ public class DetailActivity extends BaseActivity {
 
         getWindow().getDecorView().setSystemUiVisibility(visibility);
 
-        tabs.setVisibility(View.GONE);
         appbar.setVisibility(View.GONE);
     }
 
@@ -186,8 +193,11 @@ public class DetailActivity extends BaseActivity {
     private final Runnable enterLeanback = this::enterFullScreen;
 
     private void resetHideTimer() {
-        Timber.e("resetHideTimer: ");
         leanBackHandler.removeCallbacks(enterLeanback);
         leanBackHandler.postDelayed(enterLeanback, CONTROLLER_SHOW_TIMEOUT_MS);
+    }
+
+    private void showSnack(int stringRes) {
+        Snackbar.make(appbar, stringRes, Snackbar.LENGTH_SHORT).show();
     }
 }

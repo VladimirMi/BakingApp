@@ -3,7 +3,9 @@ package io.github.vladimirmi.bakingapp.presentation.master;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +21,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
+import io.github.vladimirmi.bakingapp.data.PlayerHolder;
 import io.github.vladimirmi.bakingapp.data.entity.Step;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.BaseActivity;
@@ -43,7 +46,8 @@ public class MasterActivity extends BaseActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.steps_list) RecyclerView stepsList;
     @BindView(R.id.ingredients) TextView ingredients;
-    PlayerView playerView;
+    @Nullable @BindView(R.id.player_view) PlayerView playerView;
+    @Nullable @BindView(R.id.player_thumb) ImageView playerThumb;
 
     private boolean twoPane;
     private MasterViewModel viewModel;
@@ -82,7 +86,7 @@ public class MasterActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-        if (twoPane) viewModel.releasePlayer();
+        if (twoPane) playerView.setPlayer(null);
         super.onPause();
     }
 
@@ -113,13 +117,19 @@ public class MasterActivity extends BaseActivity {
 
 
     private void setupPlayerView() {
-        playerView = findViewById(R.id.playerView);
+        bindData(viewModel.getPlayerStatus(), status -> {
+            playerThumb.setVisibility(status == PlayerHolder.PlayerStatus.NORMAL ? View.GONE : View.VISIBLE);
+            switch (status) {
+                case SOURCE_ERROR:
+                    showSnack(R.string.video_not_available);
+                    break;
+                case UNEXPECTED_ERROR:
+                    showSnack(R.string.unexpected_error);
+                    break;
+            }
+        });
 
-        bindData(viewModel.isCanShowMultimedia(), can -> playerView
-                .getOverlayFrameLayout().setVisibility(can ? View.GONE : View.VISIBLE));
-
-        ImageView artView = playerView.findViewById(R.id.exo_artwork);
-        bindData(viewModel.getSelectedStep(), step -> Utils.setImage(artView, step.getThumbnailURL()));
+        bindData(viewModel.getSelectedStep(), step -> Utils.setImage(playerThumb, step.getThumbnailURL()));
     }
 
     private void setupIngredients() {
@@ -187,5 +197,9 @@ public class MasterActivity extends BaseActivity {
     @VisibleForTesting
     public boolean isTwoPane() {
         return twoPane;
+    }
+
+    private void showSnack(int stringRes) {
+        Snackbar.make(toolbar, stringRes, Snackbar.LENGTH_SHORT).show();
     }
 }

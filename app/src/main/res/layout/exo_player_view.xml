@@ -25,11 +25,11 @@
         <!-- Video surface will be inserted as the first child of the content frame. -->
 
         <ImageView
-            android:id="@id/exo_artwork"
+            android:id="@+id/exo_artwork"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:contentDescription="@string/video_tumbnail"
+            android:contentDescription="@string/video_thumbnail"
             />
 
     </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
@@ -45,15 +45,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/black"
-            android:textColor="@android:color/white"
-            android:gravity="center"
-            android:text="@string/video_not_available"
-            />
     </FrameLayout>
 
 </merge>

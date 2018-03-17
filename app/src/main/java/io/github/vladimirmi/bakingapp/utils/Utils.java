@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import io.github.vladimirmi.bakingapp.R;
+
 /**
  * Created by Vladimir Mikhalev 13.03.2018.
  */
@@ -21,10 +23,10 @@ public class Utils {
 
     public static void setImage(ImageView view, String url) {
         Glide.with(view.getContext()).load(url)
-                .centerCrop()
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .crossFade()
+                .error(R.drawable.ic_error)
                 .into(view);
     }
 
