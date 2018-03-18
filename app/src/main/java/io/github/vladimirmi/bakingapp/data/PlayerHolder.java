@@ -2,6 +2,7 @@ package io.github.vladimirmi.bakingapp.data;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -34,50 +35,57 @@ public class PlayerHolder {
     private final Context context;
     final BehaviorRelay<PlayerStatus> playerStatus = BehaviorRelay.create();
     final BehaviorRelay<PlaybackStatus> playbackStatus = BehaviorRelay.create();
+    private long lastPosition;
+    private boolean lastPlayWhenReady;
+    private String lastVideoUrl;
+
+    private Player.DefaultEventListener listener = new Player.DefaultEventListener() {
+        @Override
+        public void onPlayerError(ExoPlaybackException error) {
+            Timber.e(error);
+            playerStatus.accept(PlayerStatus.values()[error.type]);
+        }
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            if (playbackState == Player.STATE_READY && playWhenReady) {
+                playbackStatus.accept(PlaybackStatus.PLAYED);
+            } else {
+                playbackStatus.accept(PlaybackStatus.STOPPED);
+            }
+        }
+    };
 
     @Inject
     public PlayerHolder(Context context) {
         this.context = context;
     }
 
-    public SimpleExoPlayer get() {
+    public SimpleExoPlayer getPlayer() {
         if (player == null) {
-            Timber.e("create player");
-            player = ExoPlayerFactory.newSimpleInstance(Scopes.appContext(),
-                    new DefaultTrackSelector());
-
-            player.addListener(new Player.DefaultEventListener() {
-                @Override
-                public void onPlayerError(ExoPlaybackException error) {
-                    Timber.e(error);
-                    playerStatus.accept(PlayerStatus.values()[error.type]);
-                }
-
-                @Override
-                public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                    if (playbackState == Player.STATE_READY && playWhenReady) {
-                        playbackStatus.accept(PlaybackStatus.PLAYED);
-                    } else {
-                        playbackStatus.accept(PlaybackStatus.STOPPED);
-                    }
-                }
-            });
+            createPlayer();
+            if (lastVideoUrl != null) {
+                Timber.d("again");
+                prepare(lastVideoUrl);
+            }
         }
         return player;
     }
 
     public void release() {
         if (player != null) {
-            Timber.e("release player");
-            player.stop();
+            savePlayerState();
+
+            Timber.d("release player");
             player.release();
             player = null;
         }
     }
 
-    public void prepare(String videoUrl) {
-//        videoUrl = "http://techslides.com/demos/sample-videos/small.mp4";
-//        videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
+    public void prepare(@NonNull String videoUrl) {
+        Timber.d("prepare: %s", videoUrl.isEmpty() ? "EMPTY" : videoUrl);
+
+        restorePlayerState(videoUrl);
 
         if (videoUrl.isEmpty()) {
             playerStatus.accept(PlayerStatus.SOURCE_ERROR);
@@ -94,7 +102,31 @@ public class PlayerHolder {
                 .setExtractorsFactory(new DefaultExtractorsFactory())
                 .createMediaSource(videoUri);
 
-        get().prepare(source);
+        player.prepare(source, false, true);
+    }
+
+    private void createPlayer() {
+        Timber.d("create player");
+        player = ExoPlayerFactory.newSimpleInstance(Scopes.appContext(), new DefaultTrackSelector());
+        player.addListener(listener);
+    }
+
+    private void savePlayerState() {
+        lastPosition = player.getCurrentPosition();
+        lastPlayWhenReady = player.getPlayWhenReady();
+    }
+
+    private void restorePlayerState(String videoUrl) {
+        if (player == null) createPlayer();
+
+        if (!videoUrl.equals(lastVideoUrl)) {
+            lastPosition = 0;
+            lastPlayWhenReady = false;
+        }
+        player.setPlayWhenReady(lastPlayWhenReady);
+        player.seekTo(lastPosition);
+        lastVideoUrl = videoUrl;
+
     }
 
     public enum PlayerStatus {SOURCE_ERROR, RENDERER_ERROR, UNEXPECTED_ERROR, NORMAL}

@@ -11,6 +11,7 @@ import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.widget.WidgetUpdateService;
 import io.reactivex.Single;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 08.03.2018.
@@ -31,7 +32,8 @@ public class RecipeListViewModel extends ViewModel {
     }
 
     void selectRecipe(int recipeId) {
-        repository.selectRecipe(recipeId).subscribe();
+        repository.selectRecipe(recipeId).subscribe(() -> {
+        }, Timber::e);
     }
 
     void saveRecipeForWidget(int widgetId, Recipe recipe) {

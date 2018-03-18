@@ -2,7 +2,6 @@ package io.github.vladimirmi.bakingapp.presentation.detail;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -37,10 +36,10 @@ public class DetailActivity extends BaseActivity {
 
     public static final int CONTROLLER_SHOW_TIMEOUT_MS = 3000;
 
-    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
-    @Nullable @BindView(R.id.appbar) AppBarLayout appbar;
-    @Nullable @BindView(R.id.detail_container) FrameLayout detailContainer;
-    @Nullable @BindView(R.id.tabs) TabLayout tabs;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.appbar) AppBarLayout appbar;
+    @BindView(R.id.detail_container) FrameLayout detailContainer;
+    @BindView(R.id.tabs) TabLayout tabs;
     @BindView(R.id.player_view) PlayerView playerView;
     @BindView(R.id.player_thumb) ImageView playerThumb;
 
@@ -60,6 +59,7 @@ public class DetailActivity extends BaseActivity {
         isStep = viewModel.getSelectedStepPosition().blockingFirst() != -1;
         isLandscapeMode = getResources().getBoolean(R.bool.landscape);
 
+
         if (isStep) {
             setupPlayerView();
             if (!isLandscapeMode) setupSteps();
@@ -68,19 +68,20 @@ public class DetailActivity extends BaseActivity {
         }
 
         setupToolbar();
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (isStep) playerView.setPlayer(viewModel.getPlayer());
-
     }
 
     @Override
     protected void onPause() {
-        if (isStep) playerView.setPlayer(null);
+        if (isStep) {
+            playerView.setPlayer(null);
+            viewModel.releasePlayer();
+        }
         super.onPause();
     }
 
@@ -101,11 +102,7 @@ public class DetailActivity extends BaseActivity {
     }
 
     private void setupToolbar() {
-        bindData(viewModel.getSelectedRecipe(), recipe -> {
-            if (toolbar != null) {
-                toolbar.setTitle(recipe.getName());
-            }
-        });
+        bindData(viewModel.getSelectedRecipe(), recipe -> toolbar.setTitle(recipe.getName()));
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -113,7 +110,6 @@ public class DetailActivity extends BaseActivity {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void setupSteps() {
         ViewPager pager = (ViewPager) getLayoutInflater()
                 .inflate(R.layout.view_detail_steps, detailContainer, false);
@@ -170,6 +166,9 @@ public class DetailActivity extends BaseActivity {
         playerView.setControllerShowTimeoutMs(CONTROLLER_SHOW_TIMEOUT_MS);
 
         if (isLandscapeMode) {
+            appbar.setVisibility(View.GONE);
+            tabs.setVisibility(View.GONE);
+            detailContainer.setVisibility(View.GONE);
             enterFullScreen();
         }
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> {
@@ -183,14 +182,13 @@ public class DetailActivity extends BaseActivity {
     }
 
     private void setupIngredients() {
-        if (tabs != null) {
-            tabs.setVisibility(View.GONE);
-        }
+        tabs.setVisibility(View.GONE);
         playerView.setVisibility(View.GONE);
+        playerThumb.setVisibility(View.GONE);
 
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .add(R.id.detail_container, new IngredientsFragment())
+                .replace(R.id.detail_container, new IngredientsFragment())
                 .commit();
     }
 

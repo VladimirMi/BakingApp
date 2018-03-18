@@ -47,7 +47,7 @@ public class RecipeRepository {
         if (recipes.hasValue()) {
             single = recipes.firstOrError();
         } else {
-            single = rest.getRecipes().doOnSuccess(recipes);
+            single = rest.getRecipes().doOnSuccess(recipes::accept);
         }
         return single.doOnSuccess(r -> idlingResources.setIdleState(true));
     }
@@ -55,8 +55,9 @@ public class RecipeRepository {
     public Completable selectRecipe(int recipeId) {
         return getRecipes().flatMapObservable(Observable::fromIterable)
                 .filter(recipe -> recipe.getId() == recipeId)
-                .doOnNext(selectedRecipe)
-                .ignoreElements();
+                .doOnNext(selectedRecipe::accept)
+                .ignoreElements()
+                .doOnComplete(() -> selectStepPosition(-1));
     }
 
     public Observable<Recipe> getSelectedRecipe() {
@@ -64,12 +65,10 @@ public class RecipeRepository {
     }
 
     public void selectStepPosition(int position) {
-        if (!selectedStepPosition.hasValue() || selectedStepPosition.getValue() != position) {
-            selectedStepPosition.accept(position);
-            if (position != -1) {
-                Step step = selectedRecipe.getValue().getSteps().get(position);
-                player.prepare(step.getVideoURL());
-            }
+        selectedStepPosition.accept(position);
+        if (position != -1) {
+            Step step = selectedRecipe.getValue().getSteps().get(position);
+            player.prepare(step.getVideoURL());
         }
     }
 

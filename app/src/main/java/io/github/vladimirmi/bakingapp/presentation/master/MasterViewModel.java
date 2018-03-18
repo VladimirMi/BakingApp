@@ -3,7 +3,6 @@ package io.github.vladimirmi.bakingapp.presentation.master;
 import android.arch.lifecycle.ViewModel;
 
 import com.google.android.exoplayer2.Player;
-import com.jakewharton.rxrelay2.BehaviorRelay;
 
 import java.util.List;
 
@@ -14,6 +13,7 @@ import io.github.vladimirmi.bakingapp.data.RecipeRepository;
 import io.github.vladimirmi.bakingapp.data.entity.Recipe;
 import io.github.vladimirmi.bakingapp.data.entity.Step;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 09.03.2018.
@@ -59,19 +59,24 @@ class MasterViewModel extends ViewModel {
         return repository.getSelectedRecipe();
     }
 
-    BehaviorRelay<PlayerHolder.PlayerStatus> getPlayerStatus() {
+    Observable<PlayerHolder.PlayerStatus> getPlayerStatus() {
         return repository.getPlayerStatus();
     }
 
-    BehaviorRelay<PlayerHolder.PlaybackStatus> getPlaybackStatus() {
+    Observable<PlayerHolder.PlaybackStatus> getPlaybackStatus() {
         return repository.getPlaybackStatus();
     }
 
     void selectRecipe(int recipeId) {
-        repository.selectRecipe(recipeId).subscribe();
+        repository.selectRecipe(recipeId).subscribe(() -> {
+        }, Timber::e);
     }
 
     Player getPlayer() {
-        return player.get();
+        return player.getPlayer();
+    }
+
+    void releasePlayer() {
+        player.release();
     }
 }

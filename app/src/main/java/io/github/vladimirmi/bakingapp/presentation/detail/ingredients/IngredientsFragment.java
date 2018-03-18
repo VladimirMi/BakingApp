@@ -39,6 +39,7 @@ public class IngredientsFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ingredients, container, false);
         unbinder = ButterKnife.bind(this, view);
+        ingredientsList.setNestedScrollingEnabled(false);
         return view;
     }
 

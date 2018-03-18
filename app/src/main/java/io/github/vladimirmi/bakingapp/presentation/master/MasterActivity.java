@@ -20,7 +20,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.bakingapp.R;
 import io.github.vladimirmi.bakingapp.data.PlayerHolder;
-import io.github.vladimirmi.bakingapp.data.entity.Step;
 import io.github.vladimirmi.bakingapp.di.Scopes;
 import io.github.vladimirmi.bakingapp.presentation.BaseActivity;
 import io.github.vladimirmi.bakingapp.presentation.detail.DetailActivity;
@@ -60,16 +59,15 @@ public class MasterActivity extends BaseActivity {
 
         if (findViewById(R.id.detail_container) != null) {
             twoPane = true;
-            viewModel.selectIngredients();
             setupPlayerView();
+            showIngredients();
         }
 
         // init state if come from widget
         if (getIntent() != null && getIntent().hasExtra(RecipeListActivity.EXTRA_RECIPE_ID)) {
             int recipeId = getIntent().getIntExtra(RecipeListActivity.EXTRA_RECIPE_ID, 0);
-            viewModel.selectRecipe(recipeId);
-            viewModel.selectIngredients();
             setIntent(null);
+            viewModel.selectRecipe(recipeId);
         }
 
         setupToolbar();
@@ -85,7 +83,10 @@ public class MasterActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-        if (twoPane) playerView.setPlayer(null);
+        if (twoPane) {
+            playerView.setPlayer(null);
+            viewModel.releasePlayer();
+        }
         super.onPause();
     }
 
@@ -146,35 +147,34 @@ public class MasterActivity extends BaseActivity {
     }
 
     private void setupIngredients() {
-        ingredients.setOnClickListener(v -> viewModel.selectIngredients());
+        ingredients.setOnClickListener(v -> showIngredients());
 
-        bindData(viewModel.getSelectedStepPosition(), position -> {
-            if (twoPane && position == -1) {
-                ingredients.setBackgroundColor(Color.LTGRAY);
-            } else {
-                ingredients.setBackgroundColor(Color.TRANSPARENT);
-            }
-            if (position == -1) showIngredients();
-        });
+        bindData(viewModel.getSelectedStepPosition(),
+                position -> {
+                    if (twoPane && position == -1) {
+                        ingredients.setBackgroundColor(Color.LTGRAY);
+                    } else {
+                        ingredients.setBackgroundColor(Color.TRANSPARENT);
+                    }
+                });
     }
 
     private void setupSteps() {
         stepsList.setFocusable(false);
         stepsList.setLayoutManager(new LinearLayoutManager(this));
-        StepAdapter adapter = new StepAdapter(viewModel::selectStepPosition);
+        StepAdapter adapter = new StepAdapter(this::showStep);
         stepsList.setAdapter(adapter);
         stepsList.addItemDecoration(new LineDividerItemDecoration(this));
 
-        bindData(viewModel.getSteps(), adapter::setData);
-
-        bindData(viewModel.getSelectedStep(), this::showStep);
+        bindData(viewModel.getSteps(), adapter::setData, true);
 
         if (twoPane) {
-            bindData(viewModel.getSelectedStepPosition(), adapter::selectItem);
+            bindData(viewModel.getSelectedStepPosition(), adapter::selectItem, true);
         }
     }
 
     private void showIngredients() {
+        viewModel.selectIngredients();
         if (twoPane) {
             playerView.setVisibility(View.GONE);
             playerThumb.setVisibility(View.GONE);
@@ -187,12 +187,13 @@ public class MasterActivity extends BaseActivity {
         }
     }
 
-    private void showStep(Step step) {
+    private void showStep(int position) {
+        viewModel.selectStepPosition(position);
         if (twoPane) {
             playerView.setVisibility(View.VISIBLE);
             playerThumb.setVisibility(View.VISIBLE);
             Utils.setAspectRatio(playerView);
-            Fragment fragment = StepFragment.newInstance(step);
+            Fragment fragment = StepFragment.newInstance(viewModel.getSelectedStep().blockingFirst());
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.detail_container, fragment)
                     .commit();

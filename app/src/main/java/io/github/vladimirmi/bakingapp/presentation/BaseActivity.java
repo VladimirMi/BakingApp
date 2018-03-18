@@ -38,8 +38,12 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected <T> void bindData(Observable<T> observable, Consumer<? super T> onNext) {
+        bindData(observable, onNext, false);
+    }
+
+    protected <T> void bindData(Observable<T> observable, Consumer<? super T> onNext, boolean observeAlways) {
         compositeDisposable.add(observable
-                .filter(t -> canPerformActionView)
+                .filter(t -> observeAlways || canPerformActionView)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(onNext, Timber::e));
     }

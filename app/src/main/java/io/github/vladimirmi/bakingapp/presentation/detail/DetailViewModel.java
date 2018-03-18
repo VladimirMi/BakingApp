@@ -3,7 +3,6 @@ package io.github.vladimirmi.bakingapp.presentation.detail;
 import android.arch.lifecycle.ViewModel;
 
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.jakewharton.rxrelay2.BehaviorRelay;
 
 import java.util.List;
 
@@ -55,15 +54,19 @@ class DetailViewModel extends ViewModel {
         return repository.getSelectedRecipe();
     }
 
-    BehaviorRelay<PlayerHolder.PlayerStatus> getPlayerStatus() {
+    Observable<PlayerHolder.PlayerStatus> getPlayerStatus() {
         return repository.getPlayerStatus();
     }
 
-    BehaviorRelay<PlayerHolder.PlaybackStatus> getPlaybackStatus() {
+    Observable<PlayerHolder.PlaybackStatus> getPlaybackStatus() {
         return repository.getPlaybackStatus();
     }
 
     SimpleExoPlayer getPlayer() {
-        return player.get();
+        return player.getPlayer();
+    }
+
+    void releasePlayer() {
+        player.release();
     }
 }

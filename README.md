@@ -1,13 +1,6 @@
 # BakingApp
 The third project for "Android developer nanodegree" (google developer scholarship)
 
-### Note
-On some devices, when playing videos from backend, player crashes when attempting to resume playback after resuming activity
-(i.e orientation change, to home screen and back). But on different video samples this behavior is not observed.
-Apparently, Exoplayer on some devices can not handle video with such inadequate bitrate (more than 12Mbps).
-Harcoded sample urls for test purposes may be found in .data.PlayerHolder#prepare(String videoUrl).
-
-
 ## License
 ```
 MIT License
